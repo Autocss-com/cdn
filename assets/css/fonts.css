@@ -1,0 +1,78 @@
+@layer fonts {
+
+/* MARK: FONTS
+   Self-hosted Oxanium (zero third-party dependency).
+   Static weights 200–800; paths relative to /assets/css/.
+*/
+
+@font-face {
+  font-family: 'Oxanium-extra-light';
+  src: url('../fonts/oxanium/Oxanium-ExtraLight.woff2') format('woff2'),
+    url('../fonts/oxanium/Oxanium-ExtraLight.woff') format('woff'),
+    url('../fonts/oxanium/Oxanium-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oxanium-light';
+  src: url('../fonts/oxanium/Oxanium-Light.woff2') format('woff2'),
+    url('../fonts/oxanium/Oxanium-Light.woff') format('woff'),
+    url('../fonts/oxanium/Oxanium-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oxanium-regular';
+  src: url('../fonts/oxanium/Oxanium-Regular.woff2') format('woff2'),
+    url('../fonts/oxanium/Oxanium-Regular.woff') format('woff'),
+    url('../fonts/oxanium/Oxanium-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oxanium-Medium';
+  src: url('../fonts/oxanium/Oxanium-Medium.woff2') format('woff2'),
+    url('../fonts/oxanium/Oxanium-Medium.woff') format('woff'),
+    url('../fonts/oxanium/Oxanium-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oxanium-SemiBold';
+  src: url('../fonts/oxanium/Oxanium-SemiBold.woff2') format('woff2'),
+    url('../fonts/oxanium/Oxanium-SemiBold.woff') format('woff'),
+    url('../fonts/oxanium/Oxanium-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oxanium-Bold';
+  src: url('../fonts/oxanium/Oxanium-Bold.woff2') format('woff2'),
+    url('../fonts/oxanium/Oxanium-Bold.woff') format('woff'),
+    url('../fonts/oxanium/Oxanium-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Oxanium-ExtraBold';
+  src: url('../fonts/oxanium/Oxanium-ExtraBold.woff2') format('woff2'),
+    url('../fonts/oxanium/Oxanium-ExtraBold.woff') format('woff'),
+    url('../fonts/oxanium/Oxanium-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+} /* @layer fonts */

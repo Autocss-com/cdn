@@ -1,0 +1,23 @@
+/* MARK: TYPOGRAPHY
+   Fonts self-hosted via fonts.css (@font-face). Zero third-party dependency.
+*/
+
+@layer typography {
+  :root {
+    font-family: 'Oxanium-light', system-ui, sans-serif;
+    font-size: 1.1rem;
+  }
+
+  /* https://moderncss.dev/modern-css-for-dynamic-component-based-architecture/#container-query-fluid-type */
+  h1, h2, h3, h4 {
+    letter-spacing: 0.125rem;
+    text-transform: uppercase;
+    text-wrap: balance;
+    font-weight: 100;
+  }
+
+  ul, ol, dl, dt, dd, p, figure, blockquote {
+    /* hanging-punctuation: first last; */
+    text-wrap: pretty;
+  }
+}
