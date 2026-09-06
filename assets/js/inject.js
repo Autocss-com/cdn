@@ -5,8 +5,9 @@
 //   array         → one entry per matching element, in order
 //   object        → recurse, scoped to that element
 //   allow-listed key → attribute on the current element
-// Surplus elements are emptied, never removed: CSS :empty hides them.
-// The <template> is the allow-list for what may be created.
+// One of each element is seeded in the HTML; an array longer than the seed
+// duplicates that seed element in place. Surplus is emptied, never removed:
+// CSS :empty hides it.
 
 import { toTagName } from "./to-tag-name.js";
 
@@ -22,19 +23,6 @@ function setText(el, text = "") {
   text ? el.prepend(document.createTextNode(text)) : null;
 }
 
-// Clone extra elements from the <template> pool when data outruns the DOM.
-function slots(scope, tag, needed) {
-  const found = [...scope.querySelectorAll(tag)];
-  const proto = document.querySelector("template")?.content?.querySelector(tag);
-  const parent = found.at(-1)?.parentNode ?? scope;
-
-  while (proto && found.length < needed) {
-    found.push(parent.appendChild(proto.cloneNode(true)));
-  }
-
-  return found;
-}
-
 export function inject(data, scope = document) {
   if (!data || typeof data !== "object" || !scope) return;
 
@@ -47,7 +35,14 @@ export function inject(data, scope = document) {
     const tag = toTagName(key);
 
     if (Array.isArray(value)) {
-      const targets = slots(scope, tag, value.length);
+      // Duplicate the in-HTML seed element to match the data length.
+      const targets = [...scope.querySelectorAll(tag)];
+      const seed = targets.at(-1);
+      const parent = seed?.parentNode ?? scope;
+
+      while (seed && targets.length < value.length) {
+        targets.push(parent.appendChild(seed.cloneNode(true)));
+      }
 
       targets.forEach((el, i) => {
         const entry = value[i];
