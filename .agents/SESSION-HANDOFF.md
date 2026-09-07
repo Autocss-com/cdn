@@ -129,8 +129,14 @@ docs. Remaining:
    render + row→form; extend it for write-back when built.
 2. **Before any production SW deploy:** the worker is sticky. Decide a
    release/kill policy — bump `VERSION` in `sw.js` per release; keep a self-
-   unregistering "kill-switch" `sw.js` on hand in case a bad worker ships. The
-   shipped freshness strategy is stale-while-revalidate for cdn static assets.
+   unregistering "kill-switch" `sw.js` on hand in case a bad worker ships.
+   Current strategy (testing phase) = **NETWORK-FIRST** (`VERSION` `autocss-v2`):
+   always fresh while online, cache is offline-fallback only. A production tune
+   may reintroduce stale-while-revalidate for cdn statics (instant first paint).
+   Consumers register the SW with a **relative** path `./sw.js` (root-absolute
+   `/sw.js` 404s on a Pages project subpath); `test/sw-offline.js` now serves the
+   fixture under a `/app/` subpath and asserts the SW **controls** the page, so
+   that path bug fails the gate.
 
 ## Definition of done (each increment)
 Build test-first against the golden-baseline gate; commit + push to the dev
