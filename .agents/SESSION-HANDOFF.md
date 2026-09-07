@@ -132,6 +132,17 @@ FAQ tab + disclosure + route region-clear (this session):
   sections `display:none`, 0 console errors; baselines re-captured (sole diff =
   seed leaf text cleared, e.g. `<li>seed</li>`→`<li></li>`); full gate + sw-offline
   ALL PASS.
+- **Region-clear, surplus-section removal (easter build):** `oninput.js` now also
+  REMOVES pool-materialized `<section>`s beyond the page's SEED count (captured on
+  the first route) before each `inject()`. Enables a **third consumer shape**: a
+  page that seeds ONE empty `<section>` and drives content by ARRAY-valued data
+  (`{"h2":["…"],"p":[…],"ul":[{"li":[…]}]}`) so every element materializes from the
+  cdn pool — used by **`easter`** (39 handbook docs, 3–62 sections/route). Big
+  route → many sections; the next route reclaims the surplus instead of leaving
+  blank gaps. String-driven pages (bible/id: several anchor seeds, never materialize
+  past their seeds) are unaffected — `slice(seedCount)` removes nothing. Gate
+  baselines UNCHANGED (no-op on the ≤2-section fixtures); easter 9 routes + bible/id
+  re-verified clean, 0 errors.
 - Deferred (NOT built — future polish): notice link reaches the FAQ page but does
   NOT auto-open/scroll to the Technical `<details>` (needs an `open`-attr allowlist
   or a `:target`/nav mechanism); the notice's `faq` radio ≠ the nav's `faq` radio,
