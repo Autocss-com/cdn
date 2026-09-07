@@ -7,6 +7,10 @@
 //   allow-listed key → attribute on the current element
 // Surplus elements are emptied, never removed: CSS :empty hides them.
 // The <template> is the allow-list for what may be created.
+// Scope: generic key→tag only (Mechanism A: poolClone grows arrays from the
+// pool). The data-table + edit form are a SEPARATE concern — see table.js
+// (Mechanism B: cells createElement'd from record keys, row-select→form). Keep
+// this engine generic; do NOT add table/form logic here.
 
 import { toTagName } from "./to-tag-name.js";
 

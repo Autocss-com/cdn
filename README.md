@@ -15,8 +15,9 @@ Live: https://autocss-com.github.io/cdn/
   pool from here ("called, not copied")
 - `assets/css/` — one concern per file, each in its own `@layer`; the `<link>` order is the cascade order
 - `assets/js/` — data-transport modules only (fetch JSON → clone from the pool → inject; the `oninput` lifecycle)
-- `sw.js` — App Shell service worker: the site loads instantly and works offline
-  from cache. Each consumer ships this file verbatim + a one-line registration
+- `sw.js` — App Shell service worker (network-first: always fresh online, cache
+  as offline fallback). Each consumer ships this file verbatim + registers it with
+  a relative path (`./sw.js`)
 - `assets/fonts/oxanium/` — self-hosted Oxanium via `fonts.css` `@font-face`
 - `assets/images/brand/` — shared brand assets
 - `test/` — a hermetic headless-Chromium regression gate (`npm install && npm test`)

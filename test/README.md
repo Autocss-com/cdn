@@ -1,48 +1,52 @@
 # cdn regression gate
 
-A hermetic, headless-Chromium test gate for the AutoCSS shared front-end. It
-proves — from real browser evidence, not assertions — that a change to the
-engine or the `<template>` pool does not alter what any site renders.
+Hermetic headless-Chromium gate. Proves from real browser evidence that an
+engine/pool/CSS change doesn't alter what sites render. **"No errors" ≠ not
+broken — diff the DOM** (that's how the pool-materialization regression shipped).
 
-> Rule: "renders without errors" is **never** sufficient. The engine can drop
-> content silently (that is exactly how the pool-materialization regression
-> shipped). Always **diff the DOM** against a known-good baseline.
-
-## Run it
+## Run
 
 ```sh
 cd test
-npm install          # installs playwright-core only (no browser download)
-npm test             # the gate: fixture DOM diff + engine guard
+npm install        # playwright-core only; never downloads a browser
+npm test           # gate.js + sw-offline.js
 ```
 
-Requires a Chromium that Playwright can find — set `PLAYWRIGHT_BROWSERS_PATH`
-to a Playwright browsers directory (the harness locates the binary itself; it
-never downloads one).
+Needs a Playwright-locatable Chromium — set `PLAYWRIGHT_BROWSERS_PATH`. Harness
+finds the binary; never downloads.
 
-## What it checks
+## Checks
 
-1. **Fixture DOM diff** (`gate.js` + `fixture/`): renders `fixture/` against this
-   cdn checkout and diffs every nav route's `<app-container>` HTML against the
-   committed `fixture-baseline/`. The fixture's second `<section>` seeds **no
-   `<li>`** but its data injects an `li` array there, so a working render must
-   **materialize the `<li>` from the pool** — if pool-materialization breaks, the
-   diff fails. The fixture ships an **empty `<template>`**, so it also exercises
-   the pool being fetched from the cdn (App Shell).
-2. **Engine guard**: `poolClone()` must `console.warn` (never silently drop) an
-   element that is neither seeded nor in the pool.
+`gate.js`:
+1. **fixture DOM diff** (`fixture/` vs `fixture-baseline/`) — per-route
+   `<app-container>` diff. Covers pool-materialization (an `li` array in a
+   `<section>` seeding no `<li>` → must clone from pool). Empty `<template>` →
+   pool fetched from cdn (App Shell).
+2. **fixture-table DOM diff** (`fixture-table/` vs `fixture-table-baseline/`) —
+   the `rows` contract: head labels (humanized from keys) + one body `<li>` per
+   record (row-shell cloned from pool + cells `createElement`'d = Mechanism B).
+3. **engine guard** — `poolClone()` WARNS, never silently drops, a tag neither
+   seeded nor in the pool.
+4. **table form + CSS state** — select a row → form built from THAT record,
+   input type value-inferred (id/uuid + ISO date → readonly); assert (computed
+   style) aside `none→grid` on select + selected row paints `var(--bg-selected)`.
 
-## Regenerating the baseline
+`sw-offline.js`: the App Shell service worker. Serves the fixture under a
+`/app/` **subpath** (mirrors Pages project hosting: `…github.io/<repo>/`), so
+registration must be relative `./sw.js` — root-absolute `/sw.js` 404s there. Loads
+online then cuts ALL network; must still render (network-first cache fallback) and
+the SW must **control** the page in both. `node sw-offline.js <siteDir>` checks a
+real consumer.
 
-Only from a render you have confirmed correct:
+## Regenerate baselines
+
+From a render you've confirmed correct only:
 
 ```sh
-npm run baseline     # rewrites fixture-baseline/ from the current cdn
+npm run baseline   # rewrites fixture-baseline/ AND fixture-table-baseline/
 ```
 
 ## Ad-hoc cross-version diff (how the bible regression was found)
-
-`render.js` renders any consumer checkout against any cdn checkout:
 
 ```sh
 node render.js ../../bible /path/to/cdn-at-main out/before

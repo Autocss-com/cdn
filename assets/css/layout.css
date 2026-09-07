@@ -74,6 +74,9 @@
         }
       }
 
+      /* NOTE (known, pre-token): nav state still uses a neutral color-mix, not
+         the accent tokens. The data rows below DO use --bg-hover/--bg-selected.
+         Migrate nav to the tokens when this rule is next touched. */
       label:is(:hover, :focus-within, :has(> input:checked)) {
         background: color-mix(in srgb, currentColor 10%, Canvas);
         outline: 0.0625rem solid currentColor;
