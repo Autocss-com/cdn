@@ -1,18 +1,25 @@
 import { fetchJson } from "./fetch-json.js";
 import { inject } from "./inject.js";
 import { writeStorage } from "./write-storage.js";
+import { renderTable, handleTableInput } from "./table.js";
 
+// The single global input handler (document.oninput). Nav radios drive routing;
+// every other input (row select) is the table's, delegated to handleTableInput.
 export async function oninput(event) {
   const control = event.target;
-  const group = control.name;
+  if (!control || control.name !== "nav") {
+    handleTableInput(event);
+    return;
+  }
+
   const route = control.closest("label")?.textContent.trim().toLowerCase();
+  if (!route) return;
 
-  if (!group || !route) return;
+  writeStorage("nav", route);
 
-  writeStorage(group, route);
-
-  inject(
-    await fetchJson(`assets/data/${route}.json`),
-    document.querySelector("main")
-  );
+  const data = await fetchJson(`assets/data/${route}.json`);
+  // `rows` is the table contract; everything else is generic shell content.
+  const { rows, ...content } = data ?? {};
+  inject(content, document.querySelector("main"));
+  renderTable(rows);
 }

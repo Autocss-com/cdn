@@ -43,51 +43,23 @@
       </nav>
       <main>
         <article tabindex="0">
-          <section>
-            <h1>Section 1 H1</h1>
-            <ul role="list">
-              <li>list item 01</li>
-              <li>list item 02</li>
-              <li>list item 03</li>
-              <li>list item 04</li>
-              <li>list item 05</li>
-            </ul>
-            <p>paragraph</p>
-            <p>paragraph</p>
-            <p>paragraph</p>
-          </section>
-          <section>
-            <h2>Section 2 H2</h2>
-            <p>paragraph</p>
-            <p>paragraph</p>
-            <p>paragraph</p>
-          </section>
-          <section>
-            <h2>Section 3 H2</h2>
-            <p>paragraph</p>
-            <p>paragraph</p>
-            <p>paragraph</p>
-          </section>
-          <section>
-            <h2>Section 4 H2</h2>
-            <p>paragraph</p>
-            <p>paragraph</p>
-            <p>paragraph</p>
-          </section>
-          <section>
-            <h2>Section 5 H2</h2>
-            <p>paragraph</p>
-            <p>paragraph</p>
-            <p>paragraph</p>
-          </section>
+          <h1></h1>
+          <p></p>
+          <!-- Data table: two separate <ul>s. HEAD (aria-hidden) carries the
+               column labels; BODY holds one <li> per record. Both come from the
+               `rows` contract via table.js. -->
+          <ul aria-hidden="true"><li></li></ul>
+          <ul></ul>
         </article>
       </main>
       <aside>
-        <h2>ASIDE</h2>
-        <p>paragraph</p>
-        <p>paragraph</p>
-        <p>paragraph</p>
-        <p></p>
+        <!-- Edit form: built from the selected row's own cells (no schema). -->
+        <form>
+          <fieldset></fieldset>
+          <label>Save<input type="checkbox" name="save" hidden /></label>
+          <label>Reset<input type="checkbox" name="reset" hidden /></label>
+          <label>Delete<input type="checkbox" name="delete" hidden /></label>
+        </form>
       </aside>
       <footer>
         <app-legal>LEGAL</app-legal>

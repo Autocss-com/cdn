@@ -1,0 +1,6 @@
+{
+  "app-banner": ["Table", "Table"],
+  "header": { "app-logo": "TBL", "app-user": "tester" },
+  "nav": { "label": ["RECORDS"] },
+  "footer": { "app-legal": "© Table", "app-version": "v0" }
+}

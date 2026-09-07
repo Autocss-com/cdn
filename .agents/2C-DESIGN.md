@@ -2,6 +2,14 @@
 
 _Design-first. No code until this is approved. Build test-first against the gate._
 
+> **BUILT (2026-09-07).** Approved and shipped on `claude/accuracy-first-guidelines-r85dyc`:
+> `assets/pool.html` (row shell), `assets/js/table.js`, `assets/js/oninput.js`,
+> `index.html` (table shell), `test/fixture-table` + `fixture-table-baseline` +
+> `test/gate.js` (row-select→form check). Row-cells decision: **Mechanism B**
+> (generated from keys, not allow-listed). Row-select decision: **keep checkbox +
+> radio, `handleRowToggle` ported** (delegated from the global `document.oninput`).
+> `ai` schema docs retired to optional. Gate: ALL PASS. See `SESSION-HANDOFF.md`.
+
 ## Goal
 Bring DHCP's **data-table** (head + body) and **edit form** into the cdn, driven
 entirely by the JSON contract. **No separate schema** — the contract is the
@@ -24,6 +32,32 @@ align them visually later without changing this):
 
 One table + one form per page (the singular fixtures DHCP has). CSS `:empty`
 hides them when a page carries no table/form.
+
+## Pool — two separate, independent prototypes (NOT one)
+The row `<li>` and the aside `<form>` are **two distinct entries in the cdn
+`<template>` pool**. They have a data relationship (below) but neither is built
+from the other; do not conflate them.
+
+1. **Row `<li>` shell** (new pool entry; today `pool.html` has only a bare
+   `<li></li>`):
+   ```html
+   <li tabindex="0"><label>
+     <input type="checkbox" name="row-toggle" hidden>
+     <input type="radio"    name="list-item"  hidden>
+   </label></li>
+   ```
+   Shell **only** — cells are NOT seeded. `poolClone` deep-clones this `<li>`
+   per record; each cell `<name>`/`<created>`/… is `createElement(toTagName(key))`'d
+   into the `<label>` from the record keys (**Mechanism B**, DHCP `createListItem`).
+   Cells therefore are not allow-listed by the pool — any key renders.
+2. **Aside `<form>` field prototype** (`<form><fieldset>` + a `<label><input>`
+   field). The pool already carries `<form>`/`<fieldset>`; its only label+input
+   today is the **nav radio**, so a form-field `<label><input>` entry is added
+   distinct from both the nav radio and the row-select shell.
+
+**Relationship = data only.** The row's `list-item` radio going `:checked`
+drives the selected-row visual (CSS) and is what JS keys off to copy THAT row's
+cell values into the form inputs. No structural reference either way.
 
 ## Contract — one key drives the table; the form reuses it
 ```json

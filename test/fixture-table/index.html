@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoCSS table fixture</title>
+    <!-- cdn assets by absolute URL, like a real consumer; the harness redirects
+         autocss-com.github.io/cdn/* to this checkout. -->
+    <link rel="stylesheet" href="https://autocss-com.github.io/cdn/assets/css/reset.css" />
+    <script type="module" src="https://autocss-com.github.io/cdn/assets/js/app.js"></script>
+  </head>
+  <body>
+    <app-container>
+      <app-banner>BANNER</app-banner>
+      <header><app-logo>LOGO</app-logo><app-user>USER</app-user></header>
+      <nav><label>RECORDS<input type="radio" name="nav" /></label></nav>
+      <main>
+        <article tabindex="0">
+          <h1></h1>
+          <p></p>
+          <!-- head (aria-hidden) + body: filled from the `rows` contract -->
+          <ul aria-hidden="true"><li></li></ul>
+          <ul></ul>
+        </article>
+      </main>
+      <aside>
+        <form>
+          <fieldset></fieldset>
+          <label>Save<input type="checkbox" name="save" hidden /></label>
+          <label>Reset<input type="checkbox" name="reset" hidden /></label>
+          <label>Delete<input type="checkbox" name="delete" hidden /></label>
+        </form>
+      </aside>
+      <footer><app-legal>LEGAL</app-legal><app-version>VER</app-version></footer>
+      <app-banner>BANNER</app-banner>
+      <template></template>
+    </app-container>
+  </body>
+</html>

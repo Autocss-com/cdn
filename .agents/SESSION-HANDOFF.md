@@ -1,6 +1,6 @@
 # Session Handoff — `Autocss-com/cdn` (the shared front-end)
 
-_Last updated: 2026-09-07 — session: pool-materialization fix + App Shell Stage 2a & 2b + committed test gate._
+_Last updated: 2026-09-07 — session: pool-materialization fix + App Shell Stage 2a/2b + Stage 2c (contract-driven data-table + form) + committed test gate._
 
 ## Repo role
 `cdn` is the ONE shared front-end: HTML shell + CSS + JS + self-hosted fonts +
@@ -46,6 +46,35 @@ Test gate committed (`cdn` `4d9bfd1`, extended in `19e39bc`): `cdn/test/` —
 the engine guard, and the SW offline proof. `npm run test:sw <siteDir>` checks a
 real consumer offline.
 
+Stage 2c — contract-driven data-table + form (this session):
+- `assets/pool.html` — appended a **row-shell** prototype
+  `<li tabindex="0"><label><input name="row-toggle" hidden><input name="list-item"
+  hidden></label></li>`. The bare `<li>` stays FIRST, so generic list-
+  materialization is untouched; the shell is the only `<li>` with a `<label>`
+  child, so the table clones it via `li:has(> label)` with no collision.
+- `assets/js/table.js` (NEW) — the data-table concern. `renderTable(rows)` builds
+  the HEAD (labels humanized from the record keys) and BODY (one `<li>` per record:
+  the pool row shell CLONED + cells `createElement(toTagName(key))`'d — Mechanism B,
+  cell tags NOT allow-listed). `handleTableInput(event)` is delegated from the global
+  `document.oninput`: `row-toggle` → **DHCP `handleRowToggle` (unchanged logic)**;
+  `list-item` → `updateFormFromSelectedRow` (the selected row's cells → the aside
+  form, input type INFERRED from the value — id/uuid + ISO date → readonly; no
+  schema). Delegation (not per-element handlers) because pool-cloned nodes can't
+  carry property handlers, and the cdn already routes all input through one handler.
+- `assets/js/oninput.js` — nav-guard (`name !== "nav"` delegates to the table);
+  splits `{ rows, ...content }`, generic-injects `content`, `renderTable(rows)`.
+- `index.html` — `main`/`aside` replaced with the canonical table shell (head
+  `ul[aria-hidden]` + body `ul` + aside `form > fieldset` + Save/Reset/Delete).
+- **Browser-tested → ALL PASS.** New `test/fixture-table/` + `fixture-table-baseline/`
+  (static head+body golden) and a live row-select→form interaction check in
+  `test/gate.js`; `capture-baseline.js` now captures both fixtures. The existing
+  ONE/TWO baselines were re-captured (the pool `<template>` snapshot gained ONLY the
+  row shell — verified by diff, zero content change) and `sw-offline.js` still passes.
+- `ai` docs updated (same dev branch): schema **retired as the default** (optional
+  only) — `data-flow` SKILL (contract-driven ordering + value-inference + row→form
+  reuse), `references/schema.md`, `json/shape.md` + `json` SKILL, `html/forms.md`,
+  `data-flow/positional-mapping.md`.
+
 ## ⚠️ DEPLOY ORDER (load-bearing)
 Merge **cdn (`pool.html` + `sw.js`) → cdn `main` BEFORE** either consumer's
 emptied-`<template>` / SW registration reaches its own `main`. An empty pool with
@@ -81,13 +110,18 @@ sufficient — diff the DOM. Canonical gate case: the bible `li`-in-an-unseeded-
 Read first: `ai/AGENTS.md`, `ai` `data-flow/references/pool.md`, this file. Run
 the gate before AND after any change: `cd test && npm install && npm test`.
 Done: harness committed; Stage 2a (pool from cdn) + consumer migration; Stage 2b
-(service worker). Remaining:
-1. **Stage 2c — contract-driven instantiation** (Mechanism A, explicit). The JSON
-   contract declares which components, in what order and frequency, instead of
-   implicit key→tag matching. This **changes the data contract** → data migration
-   + re-capture the golden baseline (`npm run baseline`). Biggest/riskiest —
-   design + approval first.
-2. **Before any production SW deploy:** the worker is sticky. Decide a
+(service worker); **Stage 2c (contract-driven data-table + form)** — engine
+(`table.js`), pool row shell, skeleton, gate, docs. Remaining:
+1. **CSS for the table region (separate concern — `css` skill).** The new markup
+   (head/body `<ul>`s, aside `form`, row-select `:checked`, `fieldset:not(:empty)`
+   reveal) is DATA-layer only right now; the cdn CSS does not yet style it. Lift
+   the DHCP `layout.css`/`forms.css` patterns (`li:has(input:checked)`,
+   `aside:has(form fieldset:not(:empty))`) into the cdn's CSS. No JS.
+2. **Save / Reset / Delete + form mirror-back (data layer).** The controls are
+   static markup; wiring them to the api/storage write path (and mirroring form
+   edits back to the selected row) is the next data increment. The gate covers
+   render + row→form; extend it for write-back when built.
+3. **Before any production SW deploy:** the worker is sticky. Decide a
    release/kill policy — bump `VERSION` in `sw.js` per release; keep a self-
    unregistering "kill-switch" `sw.js` on hand in case a bad worker ships. The
    shipped freshness strategy is stale-while-revalidate for cdn static assets.
