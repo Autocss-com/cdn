@@ -126,6 +126,56 @@
           padding-inline: 1rem;
           padding-block-end: 1rem;
         }
+
+        /* Data table — two separate <ul>s. HEAD (aria-hidden) carries the column
+           labels; BODY follows it, one <li> per record. Cells lay out as equal
+           columns. Row hover + the selected record (its list-item radio :checked)
+           paint from the SAME theme tokens the color-scheme control uses
+           (--bg-hover / --bg-selected / --fg-emphasis), so light/dark,
+           forced-colors and reduced-transparency all track for free. */
+        ul[aria-hidden="true"] {
+          align-content: start;
+
+          > li {
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(0, 1fr);
+            gap: 1rem;
+          }
+        }
+
+        ul[aria-hidden="true"] + ul {
+          align-content: start;
+
+          > li {
+            cursor: pointer;
+
+            > label {
+              display: grid;
+              grid-auto-flow: column;
+              grid-auto-columns: minmax(0, 1fr);
+              gap: 1rem;
+              align-items: center;
+              cursor: pointer;
+
+              > * {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
+            }
+
+            &:hover {
+              background-color: var(--bg-hover);
+              color: var(--fg-emphasis);
+            }
+
+            /* Selected record */
+            &:has(input:checked) {
+              background-color: var(--bg-selected);
+              color: var(--fg-emphasis);
+            }
+          }
+        }
       }
     }
 
@@ -134,8 +184,9 @@
       /* Hide by default. */
       display: none;
 
-      /* Display only when both boundary children contain content. */
-      &:has(> :first-child:not(:empty)):has(> :last-child:not(:empty)) {
+      /* Reveal only when a row is selected — i.e. the edit form's fieldset has
+         been populated from the selected record. */
+      &:has(form fieldset:not(:empty)) {
         display: grid;
       }
 

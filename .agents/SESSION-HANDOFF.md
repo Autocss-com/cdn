@@ -74,6 +74,16 @@ Stage 2c — contract-driven data-table + form (this session):
   only) — `data-flow` SKILL (contract-driven ordering + value-inference + row→form
   reuse), `references/schema.md`, `json/shape.md` + `json` SKILL, `html/forms.md`,
   `data-flow/positional-mapping.md`.
+- `assets/css/layout.css` — table-region styles: head/body column layout + cell
+  ellipsis, and STATE paint **from the theme tokens** (`--bg-hover`, `--bg-selected`,
+  `--fg-emphasis`) — the SAME contract the color-scheme control uses, so light/dark
+  (via `light-dark()` in `color-theme-66ccff.css`), forced-colors and
+  reduced-transparency all track for free. (Do NOT hardcode colors like
+  `color-mix(... Canvas)` — the cdn's active theme is `color-scheme.css` +
+  `color-theme-66ccff.css`; no `themes.css` is linked.) Aside reveal re-keyed to
+  `aside:has(form fieldset:not(:empty))`. Gate-tested via computed style
+  (`fixture-table` links reset+layout+color-scheme+color-theme; `gate.js` asserts
+  aside none→grid + the selected row computes `var(--bg-selected)`, not transparent).
 
 ## ⚠️ DEPLOY ORDER (load-bearing)
 Merge **cdn (`pool.html` + `sw.js`) → cdn `main` BEFORE** either consumer's
@@ -111,17 +121,13 @@ Read first: `ai/AGENTS.md`, `ai` `data-flow/references/pool.md`, this file. Run
 the gate before AND after any change: `cd test && npm install && npm test`.
 Done: harness committed; Stage 2a (pool from cdn) + consumer migration; Stage 2b
 (service worker); **Stage 2c (contract-driven data-table + form)** — engine
-(`table.js`), pool row shell, skeleton, gate, docs. Remaining:
-1. **CSS for the table region (separate concern — `css` skill).** The new markup
-   (head/body `<ul>`s, aside `form`, row-select `:checked`, `fieldset:not(:empty)`
-   reveal) is DATA-layer only right now; the cdn CSS does not yet style it. Lift
-   the DHCP `layout.css`/`forms.css` patterns (`li:has(input:checked)`,
-   `aside:has(form fieldset:not(:empty))`) into the cdn's CSS. No JS.
-2. **Save / Reset / Delete + form mirror-back (data layer).** The controls are
+(`table.js`), pool row shell, skeleton, table-region CSS (theme tokens), gate,
+docs. Remaining:
+1. **Save / Reset / Delete + form mirror-back (data layer).** The controls are
    static markup; wiring them to the api/storage write path (and mirroring form
    edits back to the selected row) is the next data increment. The gate covers
    render + row→form; extend it for write-back when built.
-3. **Before any production SW deploy:** the worker is sticky. Decide a
+2. **Before any production SW deploy:** the worker is sticky. Decide a
    release/kill policy — bump `VERSION` in `sw.js` per release; keep a self-
    unregistering "kill-switch" `sw.js` on hand in case a bad worker ships. The
    shipped freshness strategy is stale-while-revalidate for cdn static assets.

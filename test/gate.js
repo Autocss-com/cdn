@@ -99,6 +99,8 @@ async function tableFormCheck() {
     });
     await page.goto(`http://localhost:${port}/index.html`, { waitUntil: "domcontentloaded" });
     await page.waitForFunction(() => document.querySelectorAll('main ul[aria-hidden="true"] + ul li').length >= 1, { timeout: 15000 }).catch(() => {});
+    // CSS state before selection: the aside (edit form) is hidden.
+    const asideBefore = await page.evaluate(() => getComputedStyle(document.querySelector("aside")).display);
     // Select the first body row (programmatic input event = a row click).
     await page.evaluate(() => {
       const cb = document.querySelector('main ul[aria-hidden="true"] + ul li input[name="row-toggle"]');
@@ -111,17 +113,31 @@ async function tableFormCheck() {
         const i = l.querySelector("input");
         return { label: l.textContent.trim(), name: i && i.name, type: i && i.type, value: i && i.value, readOnly: i && i.readOnly };
       }));
+    // CSS state after selection: aside revealed; the selected row is highlighted
+    // from the theme tokens (its background differs from an unselected row and is
+    // not transparent) — proves :has(input:checked) paints var(--bg-selected).
+    const css = await page.evaluate(() => {
+      const rows = [...document.querySelectorAll('main ul[aria-hidden="true"] + ul > li')];
+      return {
+        asideAfter: getComputedStyle(document.querySelector("aside")).display,
+        selectedBg: getComputedStyle(rows[0]).backgroundColor,
+        otherBg: getComputedStyle(rows[1]).backgroundColor,
+      };
+    });
     const by = (n) => fields.find((f) => f.name === n);
-    const ok =
+    const formOk =
       fields.length === 3 &&
       by("id") && by("id").type === "text" && by("id").readOnly === true &&
       by("id").value === "11111111-2222-3333-4444-555555555555" && by("id").label === "Id:" &&
       by("name") && by("name").type === "text" && by("name").readOnly === false &&
       by("name").value === "Widget" && by("name").label === "Name:" &&
       by("created") && by("created").type === "datetime-local" && by("created").readOnly === true &&
-      by("created").value === "2026-01-15T08:00" && by("created").label === "Created:" &&
-      errors.length === 0;
-    return { ok, fields, errorCount: errors.length };
+      by("created").value === "2026-01-15T08:00" && by("created").label === "Created:";
+    const stateOk =
+      asideBefore === "none" && css.asideAfter !== "none" &&
+      css.selectedBg !== css.otherBg && css.selectedBg !== "rgba(0, 0, 0, 0)";
+    const ok = formOk && stateOk && errors.length === 0;
+    return { ok, fields, state: { asideBefore, ...css }, errorCount: errors.length };
   } finally { await browser.close(); srv.close(); }
 }
 
@@ -138,8 +154,9 @@ async function tableFormCheck() {
   if (failed.length) console.log("  failed requests:", failed);
   console.log("=== engine guard (poolClone warns, never silent) ===");
   console.log(`  ${gd.ok ? "PASS" : "FAIL"}  p=${gd.pCount} widget=${gd.widgetCount} warns=${gd.warnCount} errors=${gd.errorCount}`);
-  console.log("=== table form (row select -> value-inferred form) ===");
+  console.log("=== table form + CSS state (row select -> form + token highlight + aside reveal) ===");
   console.log(`  ${form.ok ? "PASS" : "FAIL"}  fields=${JSON.stringify(form.fields)}`);
+  console.log(`         state=${JSON.stringify(form.state)}`);
 
   const diffs = [...fx.results, ...tbl.results];
   const pass = diffs.length > 0 && diffs.every((r) => r.ok) && errors.length === 0 && failed.length === 0 && gd.ok && form.ok;
