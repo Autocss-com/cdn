@@ -110,6 +110,24 @@
           margin-block: 1rem;
         }
 
+        /* Route-clear parity (with oninput.js): each route wipes stale leaf text
+           in the content region, so whatever the new route doesn't fill stays
+           :empty. Hide those so no blank gaps or shell placeholders remain.
+           Scoped to `section` — the data table (direct child of article) manages
+           its own visibility via the ul[aria-hidden] rules below. */
+        section :is(h1, h2, h3, h4, p, li, dt, dd, summary):empty {
+          display: none;
+        }
+        section ul:not(:has(:not(:empty))) {
+          display: none;
+        }
+        section details:not(:has(summary:not(:empty))) {
+          display: none;
+        }
+        section:not(:has(:not(:empty))) {
+          display: none;
+        }
+
         h1,
         h2,
         h3 {

@@ -1,6 +1,6 @@
 # Session Handoff — `Autocss-com/cdn` (the shared front-end)
 
-_Last updated: 2026-09-07 — session: pool-materialization fix + App Shell Stage 2a/2b + Stage 2c (contract-driven data-table + form) + committed test gate._
+_Last updated: 2026-09-07 — session: pool-materialization fix + App Shell Stage 2a/2b + Stage 2c (contract-driven data-table + form) + committed test gate + notifications + FAQ tab (details/summary disclosure) + route region-clear. **Pages now serves the DEV branch live** for cdn/id/bible._
 
 ## Repo role
 `cdn` is the ONE shared front-end: HTML shell + CSS + JS + self-hosted fonts +
@@ -108,11 +108,44 @@ Notifications (this session — `NOTIFICATIONS-DESIGN.md`):
 - Gate: `noticeCheck()` — un-pooled tag → `<app-notice>` materializes, role=error,
   popover open, error colour + message painted, `faq` radio present. ALL PASS.
 
+FAQ tab + disclosure + route region-clear (this session):
+- FAQ nav tab on **id + bible** (NOT cdn — it ships no data): `shell.json`
+  `nav.label += "FAQ"` → `faq` route → `assets/data/faq.json`. Two `<details>`
+  disclosures (topic + technical); filler content ("add more authentic stuff
+  later"). The pool-violation notice's FAQ link lands here (its Technical list).
+- Disclosure component: pool `<details>` now NESTS `<summary>`
+  (`<details><summary></summary></details>` in `pool.html` + inline `<template>`,
+  kept identical) so a cloned details carries its summary; the FAQ clones it TWICE.
+  No JS engine change — `toTagName` passes native tags through, `poolClone`
+  materializes the `details` array. `assets/css/disclosure.css` (new `@layer`):
+  summary affordance + `::details-content` open transition (`content-visibility`
+  allow-discrete + `@starting-style`; native details still works if unsupported).
+  Linked in cdn + id + bible `index.html`.
+- **Route region-clear** (ports DHCP `injectPageContent` / autocss
+  `injectContentBlocks` "clear region before render"): `oninput.js` wipes stale
+  leaf text in `main article section *:not(:has(*))` before `inject()` each route
+  (scoped to sections — the table region + skeleton manage themselves via the
+  `ul[aria-hidden]` rules); `layout.css` hides `:empty` content (leaves, empty
+  `ul`/`details`/`section`). Fixes cross-route bleed AND shell-placeholder leak on
+  partial pages. **Fix is entirely in the shared cdn — consumers inherit by URL,
+  no consumer change.** Verified: 11 routes (bible 5 + id 6) render clean, surplus
+  sections `display:none`, 0 console errors; baselines re-captured (sole diff =
+  seed leaf text cleared, e.g. `<li>seed</li>`→`<li></li>`); full gate + sw-offline
+  ALL PASS.
+- Deferred (NOT built — future polish): notice link reaches the FAQ page but does
+  NOT auto-open/scroll to the Technical `<details>` (needs an `open`-attr allowlist
+  or a `:target`/nav mechanism); the notice's `faq` radio ≠ the nav's `faq` radio,
+  so nav won't highlight FAQ active after the link; the other three notice
+  severities (warning/information/success) have colours but no wired messages; FAQ
+  copy is filler.
+
 ## ⚠️ DEPLOY ORDER (load-bearing)
 Merge **cdn (`pool.html` + `sw.js`) → cdn `main` BEFORE** either consumer's
 emptied-`<template>` / SW registration reaches its own `main`. An empty pool with
 nothing on the live cdn renders blank. Host first, then consumers. Everything is
-dev-branch-only now; nothing live is at risk. **A service worker is sticky in
+**Pages now serves the DEV branch live for cdn/id/bible** (source repointed this
+session), so every dev-branch push deploys immediately — run the gate BEFORE every
+push; `main` remains untouched. **A service worker is sticky in
 production** (it controls the origin until unregistered) — see the SW-deploy
 policy in the next-phase prompt before shipping it.
 
@@ -163,7 +196,8 @@ the gate before AND after any change: `cd test && npm install && npm test`.
 Done: harness committed; Stage 2a (pool from cdn) + consumer migration; Stage 2b
 (service worker); **Stage 2c (contract-driven data-table + form)** — engine
 (`table.js`), pool row shell, skeleton, table-region CSS (theme tokens), gate,
-docs. Remaining:
+docs; notifications (pool-violation notice); FAQ tab + details/summary disclosure
+(id/bible); route region-clear (`oninput.js` + `layout.css` `:empty`). Remaining:
 1. **Save / Reset / Delete + form mirror-back (data layer).** The controls are
    static markup; wiring them to the api/storage write path (and mirroring form
    edits back to the selected row) is the next data increment. The gate covers
