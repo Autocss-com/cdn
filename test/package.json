@@ -1,0 +1,13 @@
+{
+  "name": "autocss-cdn-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hermetic headless-browser regression gate for the AutoCSS shared front-end.",
+  "scripts": {
+    "test": "node gate.js",
+    "baseline": "node capture-baseline.js"
+  },
+  "dependencies": {
+    "playwright-core": "^1.63.0"
+  }
+}

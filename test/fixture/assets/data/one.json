@@ -1,0 +1,6 @@
+{
+  "section": [
+    { "h1": "Page One", "p": ["alpha", "beta"] },
+    { "h2": "Notes", "li": ["note one", "note two", "note three"] }
+  ]
+}

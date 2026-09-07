@@ -1,0 +1,6 @@
+{
+  "app-banner": ["Fixture", "Fixture"],
+  "header": { "app-logo": "FIX", "app-user": "tester" },
+  "nav": { "label": ["ONE", "TWO"] },
+  "footer": { "app-legal": "© Fixture", "app-version": "v0" }
+}

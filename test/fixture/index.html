@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoCSS test fixture</title>
+    <!-- cdn assets by absolute URL, exactly like a real consumer; the harness
+         redirects autocss-com.github.io/cdn/* to this checkout. -->
+    <link rel="stylesheet" href="https://autocss-com.github.io/cdn/assets/css/reset.css" />
+    <script type="module" src="https://autocss-com.github.io/cdn/assets/js/app.js"></script>
+  </head>
+  <body>
+    <app-container>
+      <app-banner>BANNER</app-banner>
+      <header>
+        <app-logo>LOGO</app-logo>
+        <app-user>USER</app-user>
+      </header>
+      <nav>
+        <label>NAV<input type="radio" name="nav" /></label>
+      </nav>
+      <main>
+        <article tabindex="0">
+          <section>
+            <h1>H1</h1>
+            <ul role="list"><li>seed</li></ul>
+            <p>p</p>
+          </section>
+          <section>
+            <!-- NOTE: seeds h2 + p only, NO <li>. Page ONE injects an `li` array
+                 here, so it must MATERIALIZE <li> from the pool. If pool-
+                 materialization breaks, these items vanish and the diff fails. -->
+            <h2>H2</h2>
+            <p>p</p>
+          </section>
+        </article>
+      </main>
+      <aside><h2>ASIDE</h2><p>p</p></aside>
+      <footer><app-legal>LEGAL</app-legal><app-version>VER</app-version></footer>
+      <app-banner>BANNER</app-banner>
+      <template></template>
+    </app-container>
+  </body>
+</html>
