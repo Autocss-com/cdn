@@ -4,7 +4,9 @@
   "private": true,
   "description": "Hermetic headless-browser regression gate for the AutoCSS shared front-end.",
   "scripts": {
-    "test": "node gate.js",
+    "test": "node gate.js && node sw-offline.js",
+    "test:render": "node gate.js",
+    "test:sw": "node sw-offline.js",
     "baseline": "node capture-baseline.js"
   },
   "dependencies": {
