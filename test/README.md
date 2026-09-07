@@ -46,6 +46,16 @@ From a render you've confirmed correct only:
 npm run baseline   # rewrites fixture-baseline/ AND fixture-table-baseline/
 ```
 
+## Gotchas
+
+- **Baselines include the `<template>` pool.** It serializes inside
+  `<app-container>.outerHTML`, so ANY `assets/pool.html` edit shifts EVERY
+  baseline — even when page content is unchanged. Re-baseline, then eyeball the
+  git diff to confirm the only change is the pool.
+- **`pool.html`'s unclosed `<cite>`** makes the serialized template nest later
+  prototypes (incl. the row shell) *inside* `<cite>` — cosmetic, harmless;
+  `querySelector` finds them regardless. Don't "fix" it (re-baselines everything).
+
 ## Ad-hoc cross-version diff (how the bible regression was found)
 
 ```sh

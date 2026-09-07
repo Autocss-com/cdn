@@ -106,6 +106,24 @@ sufficient — diff the DOM. Canonical gate case: the bible `li`-in-an-unseeded-
   not intercept a worker's own fetches). Regenerate the baseline only from a
   known-good render: `npm run baseline`.
 
+## Gotchas (non-obvious — read before editing the pool or the demo)
+- **Pool has TWO homes, keep identical:** `assets/pool.html` (authoritative;
+  served to empty-`<template>` consumers) AND the inline `<template>` in
+  `index.html` (the cdn's own demo copy). They drifted once — the Stage-2c row
+  shell landed in `pool.html` only; now synced. Edit BOTH on any pool change (or
+  consolidate to one source: empty the inline `<template>` so the demo also pulls
+  `pool.html` via `ensurePool`).
+- **Baselines embed the pool:** the `<template>` serializes inside the
+  `<app-container>` snapshot, so ANY `pool.html` edit shifts every test baseline
+  even with unchanged page content — re-baseline + eyeball the diff (`test/README`).
+- **`pool.html`'s unclosed `<cite>`** nests later prototypes (incl. the row shell)
+  inside it in the serialized snapshot — cosmetic, harmless; `querySelector` finds
+  them regardless. Don't "fix" it (re-baselines everything).
+- **cdn ships NO `assets/data/`:** its demo page renders an empty shell
+  (header/nav/footer + empty table region). Real data lives in the consumers
+  (id/bible) + the test fixtures. The data-table/form feature has **no live
+  surface yet** — no consumer ships a `rows` page; only the gate exercises it.
+
 ## Constraint Lock — re-assert before ANY change
 - **Accuracy > brevity.** Never guess/assume; stop and ask on ambiguity. Do
   exactly what is asked, no more, no less.
