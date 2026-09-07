@@ -45,6 +45,13 @@
     --error-strong: oklch(62.8% 0.2577 29.23 / 0.4);
     --success:      oklch(86.64% 0.2948 142.5);
 
+    /* Notification status colours (notifications.css), tuned to this theme:
+       information = the accent (blue), warning = its complement (orange). */
+    --notice-information: light-dark(oklch(45.98% 0.129 249.65), oklch(80.39% 0.1192 232.69));
+    --notice-warning:     light-dark(oklch(66% 0.16 65),  oklch(80% 0.15 70));
+    --notice-error:       light-dark(oklch(58% 0.22 29),  oklch(70% 0.20 29));
+    --notice-success:     light-dark(oklch(58% 0.17 145), oklch(80% 0.20 145));
+
     /* === FORM SURFACES — theme-only component tokens === */
     --input-bg:     oklch(0% 0 0 / 0.1);
     --input-border: oklch(100% 0 89.88 / 0.1);

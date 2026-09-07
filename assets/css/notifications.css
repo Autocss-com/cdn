@@ -1,0 +1,87 @@
+/* MARK: NOTIFICATIONS
+   On-screen dev/user notices. The inject.js poolClone guard — the same
+   allow-list check that console.warns an un-poolable tag — also materializes
+   <app-notice> and shows it as a popover. CSS owns ALL presentation: the message
+   (content), the colour (theme status tokens), the anchored position, and the
+   open/close transition. Severity is the guard-set `role`
+   (error | warning | information | success); only the wired ERROR case carries a
+   message — the other three colours are ready but get no invented message.
+*/
+@layer notifications {
+
+  /* Anchor the notice to the app root (canon: popovers use anchor positioning,
+     never JS math); it rides the block-end / inline-end corner and flips if it
+     would clip. */
+  app-container {
+    anchor-name: --app;
+  }
+
+  app-notice {
+    position: fixed;
+    position-anchor: --app;
+    inset-block-end: anchor(end);
+    inset-inline-end: anchor(end);
+    position-try-fallbacks: flip-block, flip-inline;
+    margin: 1rem;
+    max-inline-size: min(28rem, 90vw);
+
+    padding-block: 0.75rem;
+    padding-inline: 1rem;
+    border-radius: var(--border-radius, 0.5rem);
+
+    /* severity colour — the guard-set role; default information */
+    --notice: var(--notice-information);
+    color: var(--fg);
+    background-color: color-mix(in oklch, var(--notice) 14%, var(--bg));
+    border-inline-start: 0.25rem solid var(--notice);
+
+    /* enter/exit transition (popover toggles display -> allow-discrete) */
+    opacity: 0;
+    translate: 0 0.5rem;
+    transition:
+      opacity 0.25s ease,
+      translate 0.25s ease,
+      display 0.25s allow-discrete,
+      overlay 0.25s allow-discrete;
+
+    &[role="error"]       { --notice: var(--notice-error); }
+    &[role="warning"]     { --notice: var(--notice-warning); }
+    &[role="information"] { --notice: var(--notice-information); }
+    &[role="success"]     { --notice: var(--notice-success); }
+
+    /* the message text (CSS content). Only the wired ERROR trigger is authored. */
+    &[role="error"]::before {
+      content: "This element isn't in the component pool, so it didn't render. The pool is a curated allow-list — here's how it's extended:";
+    }
+
+    &:popover-open {
+      display: grid;
+      gap: 0.5rem;
+      opacity: 1;
+      translate: 0 0;
+
+      @starting-style {
+        opacity: 0;
+        translate: 0 0.5rem;
+      }
+    }
+
+    /* non-dead-end link: a <label> that selects the `faq` nav radio (SPA-native
+       navigation via the oninput lifecycle — no href, no click handler). Its
+       nested radio is visually removed but stays keyboard-focusable. */
+    label {
+      justify-self: start;
+      color: var(--notice);
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+
+      > input {
+        position: absolute;
+        opacity: 0;
+        inline-size: 0;
+        block-size: 0;
+      }
+    }
+  }
+}

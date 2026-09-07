@@ -85,6 +85,29 @@ Stage 2c — contract-driven data-table + form (this session):
   (`fixture-table` links reset+layout+color-scheme+color-theme; `gate.js` asserts
   aside none→grid + the selected row computes `var(--bg-selected)`, not transparent).
 
+Notifications (this session — `NOTIFICATIONS-DESIGN.md`):
+- Pool-violation notice. `inject.js` `poolClone` guard, on the SAME shortfall it
+  already `console.warn`s, calls `notify()` → materializes `<app-notice>` from the
+  pool once and `showPopover()`s it with `role="error"` — the one sanctioned notice
+  JS touch (a programmatic popover can only be OPENED from script; no listener, no
+  click).
+- `<app-notice popover aria-live="assertive">` — new pool prototype (in `pool.html`
+  + the inline `<template>`, kept identical). ONE element; severity = guard-set
+  `role` (error/warning/information/success). Holds the FAQ link
+  `<label>FAQ<input type="radio" name="nav" value="faq"></label>` — SPA-native
+  (selects a `faq` nav radio → `oninput` → the `faq` view). Resolves once each site
+  ships a `faq` tab+data; that CONTENT is the site's, NOT built here.
+- `assets/css/notifications.css` (new `@layer`) — anchored popover (anchored to
+  `app-container`, canon-mandated), four `[role]` colours, message via `content`
+  (only the wired ERROR message is authored — no invented messages for the other
+  three), open/close transition. Linked in cdn `index.html` + id/bible.
+- Tokens `--notice-{information,warning,error,success}` — contract in
+  `color-scheme.css` (Part 1), theme-tuned oklch palette (light/dark) in
+  `color-theme-66ccff.css` (Part 2). information = accent blue, warning = its
+  orange complement; error/success reuse the theme's red/green hues.
+- Gate: `noticeCheck()` — un-pooled tag → `<app-notice>` materializes, role=error,
+  popover open, error colour + message painted, `faq` radio present. ALL PASS.
+
 ## ⚠️ DEPLOY ORDER (load-bearing)
 Merge **cdn (`pool.html` + `sw.js`) → cdn `main` BEFORE** either consumer's
 emptied-`<template>` / SW registration reaches its own `main`. An empty pool with

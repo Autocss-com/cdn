@@ -89,6 +89,14 @@
     --bg-panel:      rgb(from currentColor r g b / 5%); /* region surface (header/main/aside/footer) = 5% of text; Part 2 overrides with % accent */
     --bg-grd:        linear-gradient(180deg, rgb(from currentColor r g b / 8%) 0%, rgb(from currentColor r g b / 2%) 100%); /* app-container backdrop = currentColor transparency stops; Part 2 overrides with accent-based stops */
 
+    /* Notification status colours (notifications.css). Names declared here so a
+       theme-less drop-in still shows coloured notices; Part 2 tunes them to the
+       theme hue. light-dark() adapts each to the active color-scheme. */
+    --notice-information: light-dark(oklch(45% 0.13 250), oklch(80% 0.12 233)); /* blue  */
+    --notice-warning:     light-dark(oklch(62% 0.15 65),  oklch(78% 0.14 70));  /* orange */
+    --notice-error:       light-dark(oklch(55% 0.20 27),  oklch(70% 0.18 27));  /* red   */
+    --notice-success:     light-dark(oklch(52% 0.15 150), oklch(75% 0.18 150)); /* green */
+
     /* Focus ring — same accent hue as --fg-accent so the keyboard-focus
        indicator always tracks the theme accent. Forced-colors swaps it to
        Highlight (see the forced-colors block). Part 2 derives it from the SAME

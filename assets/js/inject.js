@@ -45,9 +45,27 @@ function poolClone(scope, tag, needed) {
       `[inject] <${tag}>: data needs ${needed}, only ${found.length} available ` +
       `(not seeded, no <template> prototype) — ${needed - found.length} not rendered.`
     );
+    notify();
   }
 
   return found;
+}
+
+// Surface a pool allow-list violation to the viewer: materialize <app-notice>
+// from the pool once and show it as a popover with role="error". CSS owns the
+// message, colour, position, and transition (notifications.css). This is the ONE
+// sanctioned notice touch — a programmatic popover can only be OPENED from script
+// (there is no user invoker), analogous to the single sanctioned nav
+// dispatchEvent; it registers no listener and fires no click.
+function notify() {
+  let notice = document.querySelector("app-notice");
+  if (!notice) {
+    const proto = document.querySelector("template")?.content?.querySelector("app-notice");
+    if (!proto) return;
+    notice = document.body.appendChild(proto.cloneNode(true));
+  }
+  notice.setAttribute("role", "error");
+  if (!notice.matches(":popover-open")) notice.showPopover?.();
 }
 
 export function inject(data, scope = document) {

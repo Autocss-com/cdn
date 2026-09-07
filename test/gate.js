@@ -68,6 +68,76 @@ async function guardCheck() {
   } finally { await browser.close(); srv.close(); fs.rmSync(tmp, { recursive: true, force: true }); }
 }
 
+// Inject an un-pooled tag and assert the pool-violation notice appears: the
+// poolClone guard materializes <app-notice>, role="error", popover open, the
+// error colour + message are painted (notifications.css), and the FAQ link (a
+// `faq` nav radio) is present.
+async function noticeCheck() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "autocss-notice-"));
+  fs.writeFileSync(path.join(tmp, "index.html"),
+    `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://autocss-com.github.io/cdn/assets/css/reset.css">
+<link rel="stylesheet" href="https://autocss-com.github.io/cdn/assets/css/color-scheme.css">
+<link rel="stylesheet" href="https://autocss-com.github.io/cdn/assets/css/color-theme-66ccff.css">
+<link rel="stylesheet" href="https://autocss-com.github.io/cdn/assets/css/notifications.css">
+</head><body>
+<app-container><main></main>
+<template><p></p><app-notice popover aria-live="assertive"><label>FAQ<input type="radio" name="nav" value="faq"></label></app-notice></template>
+</app-container>
+<script type="module">
+  import { inject } from "https://autocss-com.github.io/cdn/assets/js/inject.js";
+  inject({ p: ["ok"] }, document.querySelector("main"));      // poolable -> no notice
+  inject({ widget: ["x"] }, document.querySelector("main"));  // un-poolable -> notice
+  window.__done = true;
+</script></body></html>`);
+  const srv = http.createServer((req, res) => {
+    const u = decodeURIComponent(req.url.split("?")[0]);
+    if (u === "/favicon.ico") { res.writeHead(204).end(); return; }
+    const f = path.join(tmp, u === "/" ? "/index.html" : u);
+    fs.readFile(f, (e, b) => e ? res.writeHead(404).end() : (res.writeHead(200, { "Content-Type": MIME[path.extname(f)] || "text/html" }), res.end(b)));
+  });
+  await new Promise((r) => srv.listen(0, r));
+  const port = srv.address().port;
+  const browser = await chromium.launch({ executablePath: findChromium(), args: ["--no-sandbox"] });
+  try {
+    const page = await browser.newPage();
+    const errors = [];
+    page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+    page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+    await page.route("**/*", (route) => {
+      const url = route.request().url();
+      if (url.includes("autocss-com.github.io/cdn/")) {
+        const p = new URL(url).pathname.replace(/^\/cdn\//, "/");
+        const f = path.join(CDN, p);
+        try { return route.fulfill({ status: 200, contentType: MIME[path.extname(f)] || "application/octet-stream", body: fs.readFileSync(f) }); }
+        catch { return route.fulfill({ status: 404, body: "cdn miss " + p }); }
+      }
+      if (url.startsWith(`http://localhost:${port}`)) return route.continue();
+      return route.abort();
+    });
+    await page.goto(`http://localhost:${port}/index.html`, { waitUntil: "domcontentloaded" });
+    await page.waitForFunction(() => window.__done === true, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(300);
+    const r = await page.evaluate(() => {
+      const n = document.querySelector("app-notice");
+      if (!n) return { present: false };
+      const cs = getComputedStyle(n);
+      return {
+        present: true,
+        role: n.getAttribute("role"),
+        open: n.matches(":popover-open"),
+        border: cs.borderInlineStartColor,
+        content: getComputedStyle(n, "::before").content,
+        faq: !!n.querySelector('label input[name="nav"][value="faq"]'),
+      };
+    });
+    const ok = r.present === true && r.role === "error" && r.open === true && r.faq === true &&
+      r.border !== "rgba(0, 0, 0, 0)" && typeof r.content === "string" && r.content !== "none" && r.content.length > 5 &&
+      errors.length === 0;
+    return { ok, result: r, errorCount: errors.length };
+  } finally { await browser.close(); srv.close(); fs.rmSync(tmp, { recursive: true, force: true }); }
+}
+
 // Select the first table row and assert the aside form is built from THAT record
 // with value-inferred types (id/uuid + date → readonly; name → editable text).
 async function tableFormCheck() {
@@ -145,6 +215,7 @@ async function tableFormCheck() {
   const fx = await diffFixture("fixture", "fixture-baseline");
   const tbl = await diffFixture("fixture-table", "fixture-table-baseline");
   const gd = await guardCheck();
+  const notice = await noticeCheck();
   const form = await tableFormCheck();
 
   console.log("=== fixture DOM diff vs golden baseline ===");
@@ -154,12 +225,14 @@ async function tableFormCheck() {
   if (failed.length) console.log("  failed requests:", failed);
   console.log("=== engine guard (poolClone warns, never silent) ===");
   console.log(`  ${gd.ok ? "PASS" : "FAIL"}  p=${gd.pCount} widget=${gd.widgetCount} warns=${gd.warnCount} errors=${gd.errorCount}`);
+  console.log("=== pool-violation notice (un-pooled tag -> <app-notice> popover) ===");
+  console.log(`  ${notice.ok ? "PASS" : "FAIL"}  ${JSON.stringify(notice.result)}`);
   console.log("=== table form + CSS state (row select -> form + token highlight + aside reveal) ===");
   console.log(`  ${form.ok ? "PASS" : "FAIL"}  fields=${JSON.stringify(form.fields)}`);
   console.log(`         state=${JSON.stringify(form.state)}`);
 
   const diffs = [...fx.results, ...tbl.results];
-  const pass = diffs.length > 0 && diffs.every((r) => r.ok) && errors.length === 0 && failed.length === 0 && gd.ok && form.ok;
+  const pass = diffs.length > 0 && diffs.every((r) => r.ok) && errors.length === 0 && failed.length === 0 && gd.ok && notice.ok && form.ok;
   console.log(pass ? "\nALL PASS" : "\nFAIL");
   process.exit(pass ? 0 : 1);
 })().catch((e) => { console.error(e.stack || e.message); process.exit(1); });
