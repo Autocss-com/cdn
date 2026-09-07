@@ -22,14 +22,25 @@ function setText(el, text = "") {
   text ? el.prepend(document.createTextNode(text)) : null;
 }
 
-// Clone extra elements from the <template> pool when data outruns the DOM.
-function slots(scope, tag, needed) {
+// Pool-materialization (Mechanism A): grow the DOM to `needed` of `tag` by
+// cloning the allow-listed prototype from the <template> pool. The pool IS the
+// allow-list — it bounds what data may create. If a tag is neither seeded in
+// the DOM nor present in the pool, the shortfall is reported, never silently
+// dropped (that silent drop is exactly the regression this guards against).
+function poolClone(scope, tag, needed) {
   const found = [...scope.querySelectorAll(tag)];
   const proto = document.querySelector("template")?.content?.querySelector(tag);
   const parent = found.at(-1)?.parentNode ?? scope;
 
   while (proto && found.length < needed) {
     found.push(parent.appendChild(proto.cloneNode(true)));
+  }
+
+  if (found.length < needed) {
+    console.warn(
+      `[inject] <${tag}>: data needs ${needed}, only ${found.length} available ` +
+      `(not seeded, no <template> prototype) — ${needed - found.length} not rendered.`
+    );
   }
 
   return found;
@@ -47,7 +58,7 @@ export function inject(data, scope = document) {
     const tag = toTagName(key);
 
     if (Array.isArray(value)) {
-      const targets = slots(scope, tag, value.length);
+      const targets = poolClone(scope, tag, value.length);
 
       targets.forEach((el, i) => {
         const entry = value[i];
