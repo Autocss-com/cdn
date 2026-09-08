@@ -1,6 +1,6 @@
 # Session Handoff — `Autocss-com/cdn` (the shared front-end)
 
-_Last updated: 2026-09-07 — session: pool-materialization fix + App Shell Stage 2a/2b + Stage 2c (contract-driven data-table + form) + committed test gate + notifications + FAQ tab (details/summary disclosure) + route region-clear. **Pages now serves the DEV branch live** for cdn/id/bible._
+_Last updated: 2026-09-08 — session: pool-materialization fix + App Shell Stage 2a/2b + Stage 2c (contract-driven data-table + form) + committed test gate + notifications + FAQ tab (details/summary disclosure) + route region-clear (incl. easter surplus-section removal) + **pool `<cite>` / `:empty`-blockquote fixes merged to `main` (LIVE)**. **Pages serves `main`** for cdn/id/bible; gate-green dev increments merge fast-forward to `main`._
 
 ## Repo role
 `cdn` is the ONE shared front-end: HTML shell + CSS + JS + self-hosted fonts +
@@ -10,7 +10,26 @@ absolute URL) + `assets/data/*.json`. Zero third-party deps, no build, semantic
 HTML, GitHub Pages + CORS `*`. Canonical laws: `Autocss-com/ai` → `AGENTS.md`;
 the pool/mechanism design: `ai` `data-flow/references/pool.md`.
 
-## This session — all on dev branch `claude/accuracy-first-guidelines-r85dyc`; `main` UNTOUCHED
+## Continued session (2026-09-08) — pool bug fixes, merged to `main` (LIVE)
+Commit **`f9aa75a`** on dev, then **fast-forwarded dev → `main`** (`main` was a
+direct ancestor, one commit behind, zero divergence). Verified: **pages build #10
+`success`** on `head_sha f9aa75a` — cdn `main` is LIVE.
+- **Unclosed `<cite>` in the pool (`pool.html` + `index.html` inline mirror) —
+  closed.** It had nested EVERY following prototype (`<code>` … the row-shell
+  `<li>` AND the `<app-notice>` notice itself) inside `<cite>`, closing only at
+  `</template>`. NOT cosmetic (the old gotcha note calling it "harmless" was
+  WRONG): the notice prototype was trapped. Gate's notice check now clones
+  `<app-notice>` cleanly (`faq:true`).
+- **`:empty` blockquote — hidden.** Added `blockquote` to `layout.css`'s
+  `section :is(…):empty` list, so a route-cleared scripture blockquote no longer
+  leaves a blank gap. Display-only → absent from the DOM snapshot (no baseline
+  churn from this half).
+- **Verified:** rendered-vs-golden diff was EXACTLY the `<cite>` close on all 3
+  fixtures and nothing else; baselines re-captured; full gate + sw-offline ALL
+  PASS. Consumers (easter/id/bible) inherit by URL on next load past their
+  network-first SW.
+
+## Development log — dev branch `claude/accuracy-first-guidelines-r85dyc` (gate-green increments merged to `main`)
 Engine (`assets/js/inject.js`):
 - `79d6e39` removed `slots()` and cloned the in-HTML **seed** instead of the pool.
   **Browser-tested → regression:** an `li` array injected into a `<section>`
@@ -153,10 +172,10 @@ FAQ tab + disclosure + route region-clear (this session):
 ## ⚠️ DEPLOY ORDER (load-bearing)
 Merge **cdn (`pool.html` + `sw.js`) → cdn `main` BEFORE** either consumer's
 emptied-`<template>` / SW registration reaches its own `main`. An empty pool with
-nothing on the live cdn renders blank. Host first, then consumers. Everything is
-**Pages now serves the DEV branch live for cdn/id/bible** (source repointed this
-session), so every dev-branch push deploys immediately — run the gate BEFORE every
-push; `main` remains untouched. **A service worker is sticky in
+nothing on the live cdn renders blank. Host first, then consumers. **Pages serves
+`main` for cdn/id/bible** (source repointed to `main`), so a gate-green increment
+goes live by merging fast-forward dev → `main` — run the gate BEFORE every push,
+and merge only when green. **A service worker is sticky in
 production** (it controls the origin until unregistered) — see the SW-deploy
 policy in the next-phase prompt before shipping it.
 
@@ -183,9 +202,11 @@ sufficient — diff the DOM. Canonical gate case: the bible `li`-in-an-unseeded-
 - **Baselines embed the pool:** the `<template>` serializes inside the
   `<app-container>` snapshot, so ANY `pool.html` edit shifts every test baseline
   even with unchanged page content — re-baseline + eyeball the diff (`test/README`).
-- **`pool.html`'s unclosed `<cite>`** nests later prototypes (incl. the row shell)
-  inside it in the serialized snapshot — cosmetic, harmless; `querySelector` finds
-  them regardless. Don't "fix" it (re-baselines everything).
+- **`pool.html`'s `<cite>` is now CLOSED (`f9aa75a`).** The prior unclosed tag was
+  NOT harmless (this note used to claim so): it nested every later prototype —
+  incl. the row shell AND the `<app-notice>` — inside `<cite>` until `</template>`,
+  trapping the notice. Fixed in `pool.html` + the inline `<template>`; baselines
+  re-captured. Keep both `<cite></cite>` (edit BOTH homes on any pool change).
 - **cdn ships NO `assets/data/`:** its demo page renders an empty shell
   (header/nav/footer + empty table region). Real data lives in the consumers
   (id/bible) + the test fixtures. The data-table/form feature has **no live
@@ -199,7 +220,8 @@ sufficient — diff the DOM. Canonical gate case: the bible `li`-in-an-unseeded-
 - **Air-gap SoC:** HTML = structure (preloaded, JAMstack), CSS = UI runtime
   (`:empty`/`:has` watch content), JS = data transport only. Route/shape lives in
   the DATA, never in markup/CSS.
-- **`main` stays untouched** until the deploy order above is satisfied.
+- **`main` is the live Pages source**; merge dev → `main` (fast-forward) only when
+  the gate is green and the deploy order above is satisfied.
 
 ## NEXT SESSION PROMPT — Stage 2 remainder
 Read first: `ai/AGENTS.md`, `ai` `data-flow/references/pool.md`, this file. Run
@@ -226,4 +248,5 @@ docs; notifications (pool-violation notice); FAQ tab + details/summary disclosur
 
 ## Definition of done (each increment)
 Build test-first against the golden-baseline gate; commit + push to the dev
-branch only; report the diff result; never merge to `main` out of deploy order.
+branch; report the diff result; a green increment merges fast-forward dev →
+`main` (the live Pages source) — never merge red or out of deploy order.
