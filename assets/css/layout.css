@@ -115,7 +115,7 @@
            :empty. Hide those so no blank gaps or shell placeholders remain.
            Scoped to `section` — the data table (direct child of article) manages
            its own visibility via the ul[aria-hidden] rules below. */
-        section :is(h1, h2, h3, h4, p, li, dt, dd, summary):empty {
+        section :is(h1, h2, h3, h4, p, blockquote, li, dt, dd, summary):empty {
           display: none;
         }
         section ul:not(:has(:not(:empty))) {
