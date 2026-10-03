@@ -202,7 +202,7 @@
 
     aside {
       display: grid;
-      /* Hide by default. */
+      /* Hide by default */
       display: none;
 
       /* Reveal only when a row is selected — i.e. the edit form's fieldset has
@@ -245,7 +245,7 @@
   }
 }
 
-/* Template */
+/* Hide by default */
 template {
   display: none:
 }
