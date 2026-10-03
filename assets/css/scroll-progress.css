@@ -1,0 +1,428 @@
+
+      @import url("https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap");
+
+      @property --sp-p {
+        syntax: "<percentage>";
+        inherits: true;
+        initial-value: 0%;
+      }
+      @property --sp-n {
+        syntax: "<integer>";
+        inherits: false;
+        initial-value: 0;
+      }
+
+      @layer scroll-progress, demo;
+
+      /* ==========================================================================
+         SCROLL-PROGRESS  ·  drop-in, self-contained, one concern.
+         Give ANY element `overflow: auto | scroll`. Where the browser supports it,
+         a progress ring appears in that element's own corner and fills as it scrolls.
+         The ring is the element's native scroll button: activating it (click, or
+         Tab then Enter) returns that element to its top.
+         Native behaviour only — scrolling, focus and the scrollbar are never hijacked.
+         Extend it to more elements by adding them to BOTH :where() lists:
+         the host rule and the motion block.
+
+         Rules for every element in the :where() list:
+         1. `container-type` holds one value. To also make an element a size
+            container, list both keywords: `container-type: inline-size scroll-state;`
+            Setting only `inline-size` removes `scroll-state` and the ring never shows.
+         2. Do not use the `container` shorthand on these elements. It resets
+            `container-type` to `normal`. Set `container-name` and `container-type`
+            as separate properties.
+         3. These elements are scroll-state containers, so an unnamed
+            `@container scroll-state(...)` query elsewhere resolves to the nearest one.
+            Other features must give their container a `container-name` and query it
+            by that name.
+         4. Where the ring renders, these elements get `position: relative`
+            (it holds the ring's top snap point inside the scrolled content).
+         ========================================================================== */
+      @layer scroll-progress {
+        /* ---------- color ---------- */
+        @layer color {
+          :root {
+            --sp-accent: light-dark(oklch(0.52 0.14 220), oklch(0.85 0.14 200));
+            --sp-track: color-mix(in oklab, currentColor 10%, transparent);
+          }
+        }
+
+        /* ---------- layout + behaviour ---------- */
+        @layer engine {
+          :where(article, section, main, aside, ul, ol) {
+            --sp-size: calc(6.5ch + 2 * max(var(--sp-track-bar), var(--sp-accent-bar))); /* ring diameter: fits "100%" in any font */
+            --sp-gap: 2rem; /* inset from the corner  */
+            --sp-bar: 0.125rem; /* ring thickness (≈ 2px) where border-shape is not supported */
+            --sp-track-bar: 0.3125rem; /* background ring thickness (≈ 5px) where border-shape works */
+            --sp-accent-bar: 0.125rem; /* progress ring thickness (≈ 2px) where border-shape works */
+            --sp-block: end; /* corner, block axis: start | end (top | bottom) */
+            --sp-inline: end; /* corner, inline axis: start | end (left | right in left-to-right text) */
+            --sp-font-family: "Oxanium", system-ui, sans-serif; /* label font */
+            --sp-font-weight: 100; /* label weight */
+            --sp-font-size: 0.7rem; /* number size; % is 1/1.2 of it */
+
+            container-type: scroll-state; /* native: reports its own scroll state   */
+            anchor-name: --sp; /* the ring tethers to it…                */
+            anchor-scope: --sp, --sp-ring; /* …scoped, so every scroller owns its own */
+            counter-reset: sp-n var(--sp-n);
+            animation: sp-fill linear both;
+            animation-timeline: scroll(self block); /* the scroller drives its own fill; pseudos read it */
+
+            /* ---------- ring path: scroll-driven fill, anchoring, scroll-state, scroll button ---------- */
+            @supports (animation-timeline: scroll()) and (anchor-name: --a) and
+              (container-type: scroll-state) and selector(::scroll-button(*)) {
+              & {
+                position: relative; /* ::before (the top snap point) scrolls with the content */
+                scrollbar-width: none; /* the ring is the indicator; scrolling stays native */
+              }
+
+              /* ::before = the top snap point. One press of the scroll button lands here. */
+              &::before {
+                content: "";
+                position: absolute;
+                inset-block-start: 0;
+                inset-inline-start: 0;
+                inline-size: 0;
+                block-size: 0;
+              }
+              /* snapping is on only while this scroller's own scroll button has focus
+                 (the scroller is :focus-within, but neither it nor any child is focused) */
+              &:focus-within:not(:focus, :has(:focus-within)) {
+                scroll-snap-type: block mandatory;
+
+                &::before {
+                  scroll-snap-align: start;
+                }
+              }
+
+              /* ::after = the ring box, pinned to the scroller's corner */
+              &::after {
+                position: fixed; /* stays pinned while the scroller is a containing block */
+                position-anchor: --sp;
+                top: anchor(top);
+                right: anchor(right);
+                bottom: anchor(bottom);
+                left: anchor(left);
+                align-self: var(--sp-block);
+                justify-self: var(--sp-inline);
+                margin-top: var(--sp-gap);
+                margin-right: var(--sp-gap);
+                margin-bottom: var(--sp-gap);
+                margin-left: var(--sp-gap);
+                inline-size: var(--sp-size);
+                aspect-ratio: 1;
+                box-sizing: border-box;
+                /* the label font: --sp-size is in ch, so the box that uses it carries this font */
+                font-family: var(--sp-font-family);
+                font-weight: var(--sp-font-weight);
+                font-size: var(--sp-font-size);
+                anchor-name: --sp-ring; /* the scroll button sits on this box */
+                /* hidden until the element is actually scrolled */
+                visibility: hidden;
+                opacity: 0;
+                translate: 0 calc(var(--sp-size) + var(--sp-gap));
+              }
+
+              /* the native scroll button, laid exactly over the ring box */
+              &::scroll-button(block-start) {
+                position: fixed;
+                position-anchor: --sp-ring;
+                top: anchor(top);
+                right: anchor(right);
+                bottom: anchor(bottom);
+                left: anchor(left);
+                margin-top: 0;
+                margin-right: 0;
+                margin-bottom: 0;
+                margin-left: 0;
+                padding-top: 0;
+                padding-right: 0;
+                padding-bottom: 0;
+                padding-left: 0;
+                border-top-style: none;
+                border-right-style: none;
+                border-bottom-style: none;
+                border-left-style: none;
+                border-top-left-radius: 50%;
+                border-top-right-radius: 50%;
+                border-bottom-right-radius: 50%;
+                border-bottom-left-radius: 50%;
+                background-color: transparent;
+                color: inherit; /* not the UA button color */
+                font-family: var(--sp-font-family);
+                font-weight: var(--sp-font-weight);
+                font-size: var(--sp-font-size);
+                line-height: 1;
+                text-align: center;
+                align-content: center;
+                cursor: pointer;
+                /* hidden until the element is actually scrolled (follows the ring box as it slides in) */
+                visibility: hidden;
+                opacity: 0;
+              }
+
+              /* reveal once the element is actually scrolled (native scroll-state) */
+              @container scroll-state(scrollable: top) {
+                &::after {
+                  visibility: visible;
+                  opacity: 1;
+                  translate: 0 0;
+                }
+                &::scroll-button(block-start) {
+                  visibility: visible;
+                  opacity: 1;
+                }
+              }
+
+              /* the fade (no movement) runs even with reduced motion: without it, Chrome ignores
+                 the first wheel turn right after the jump to the top */
+              &::after,
+              &::scroll-button(block-start) {
+                transition:
+                  opacity 0.35s ease,
+                  visibility 0s linear 0.35s;
+              }
+              @container scroll-state(scrollable: top) {
+                &::after,
+                &::scroll-button(block-start) {
+                  transition-delay: 0s;
+                }
+              }
+
+              /* ---------- two rings (own thickness each): drawn by the scroll button ---------- */
+              /* border-shape draws the outer band between two circles without using layout space.
+                 ::after = the number (centered on its own)
+                 button  = progress band (outer) + background ring (inner, inset shadow) + the % */
+              @supports (background-clip: border-area) and (border-shape: circle(50%)) {
+                &::after {
+                  /* the number, centered on its own; screen readers still hear "50%" */
+                  content: counter(sp-n) / counter(sp-n) "%";
+                  display: grid;
+                  align-items: center;
+                  justify-items: center;
+                  color: var(--sp-accent);
+                  line-height: 1;
+                  font-variant-numeric: tabular-nums; /* every digit 1ch wide, in any fallback font */
+                }
+                &::scroll-button(block-start) {
+                  /* 1px of room on every side, so the box edge never clips the ring's anti-aliased rim */
+                  top: calc(anchor(top) - 1px);
+                  right: calc(anchor(right) - 1px);
+                  bottom: calc(anchor(bottom) - 1px);
+                  left: calc(anchor(left) - 1px);
+                  border-shape: circle(calc(50% - 1px)) circle(calc(50% - 1px - var(--sp-accent-bar))); /* the outer band */
+                  border-top-color: transparent; /* border-shape paints its band in the border color */
+                  border-right-color: transparent;
+                  border-bottom-color: transparent;
+                  border-left-color: transparent;
+                  background-color: var(--sp-track); /* outer band, not yet filled */
+                  background-image: if(
+                    style(--sp-p >= 99.5%): linear-gradient(var(--sp-accent), var(--sp-accent)); /* the number reads 100 here: close the ring, no seam */
+                    else: conic-gradient(var(--sp-accent) var(--sp-p), transparent 0)
+                  );
+                  background-origin: border-box;
+                  background-clip: border-area;
+                  box-shadow: inset 0 0 0 max(0px, calc(var(--sp-track-bar) - var(--sp-accent-bar))) var(--sp-track); /* inner part of the background ring */
+
+                  /* the %: centered under the number, one line below it */
+                  content: "%" / "Scroll to top";
+                  padding-top: calc(var(--sp-font-size) * 2); /* centers the % line one number line below the number's center */
+                  font-size: calc(var(--sp-font-size) / 1.2); /* size step of HTML <sup> (font-size: smaller) */
+                  -webkit-text-fill-color: var(--sp-accent); /* `color` stays inherited: --sp-track's currentColor is the text color */
+                }
+                &::scroll-button(block-start):hover {
+                  /* hovering the ring: background ring takes the accent color at 50% */
+                  --sp-track: color-mix(in oklab, var(--sp-accent) 50%, transparent);
+                }
+              }
+
+              /* ---------- one ring: drawn by ::after; the button carries the label ---------- */
+              @supports not ((background-clip: border-area) and (border-shape: circle(50%))) {
+                &::after {
+                  content: "";
+                  border-top-left-radius: 50%;
+                  border-top-right-radius: 50%;
+                  border-bottom-right-radius: 50%;
+                  border-bottom-left-radius: 50%;
+                  padding-top: var(--sp-bar);
+                  padding-right: var(--sp-bar);
+                  padding-bottom: var(--sp-bar);
+                  padding-left: var(--sp-bar);
+                  background-image: conic-gradient(var(--sp-accent) var(--sp-p), var(--sp-track) 0);
+                  mask-image: linear-gradient(currentColor 0 0), linear-gradient(currentColor 0 0);
+                  mask-origin: content-box, border-box;
+                  mask-clip: content-box, border-box;
+                  mask-composite: exclude;
+                }
+                &::scroll-button(block-start) {
+                  /* laid out like the ring box itself, so it slides with it in every version */
+                  position-anchor: --sp;
+                  align-self: var(--sp-block);
+                  justify-self: var(--sp-inline);
+                  margin-top: var(--sp-gap);
+                  margin-right: var(--sp-gap);
+                  margin-bottom: var(--sp-gap);
+                  margin-left: var(--sp-gap);
+                  inline-size: var(--sp-size);
+                  aspect-ratio: 1;
+                  translate: 0 calc(var(--sp-size) + var(--sp-gap));
+
+                  content: counter(sp-n) "%" / "Scroll to top";
+                  color: var(--sp-accent);
+                  border-top-style: solid; /* hover ring, same band as the ring */
+                  border-right-style: solid;
+                  border-bottom-style: solid;
+                  border-left-style: solid;
+                  border-top-width: var(--sp-bar);
+                  border-right-width: var(--sp-bar);
+                  border-bottom-width: var(--sp-bar);
+                  border-left-width: var(--sp-bar);
+                  border-top-color: transparent;
+                  border-right-color: transparent;
+                  border-bottom-color: transparent;
+                  border-left-color: transparent;
+                }
+                &::scroll-button(block-start):hover {
+                  /* hovering the ring: the ring takes the accent color at 50% */
+                  border-top-color: color-mix(in oklab, var(--sp-accent) 50%, transparent);
+                  border-right-color: color-mix(in oklab, var(--sp-accent) 50%, transparent);
+                  border-bottom-color: color-mix(in oklab, var(--sp-accent) 50%, transparent);
+                  border-left-color: color-mix(in oklab, var(--sp-accent) 50%, transparent);
+                }
+                @container scroll-state(scrollable: top) {
+                  &::scroll-button(block-start) {
+                    translate: 0 0;
+                  }
+                }
+              }
+            }
+
+            /* ring can't render → leave a thin accent scrollbar with native auto-hide */
+            @supports not (
+              (animation-timeline: scroll()) and (anchor-name: --a) and
+                (container-type: scroll-state) and selector(::scroll-button(*))
+            ) {
+              & {
+                scrollbar-width: thin;
+                scrollbar-color: var(--sp-accent) transparent;
+              }
+            }
+          }
+
+          /* ---------- motion: only when the user has not asked for reduced motion ---------- */
+          @media (prefers-reduced-motion: no-preference) {
+            :root {
+              scroll-behavior: smooth;
+            }
+            :where(article, section, main, aside, ul, ol) {
+              scroll-behavior: smooth;
+
+              &::after {
+                transition:
+                  opacity 0.35s ease,
+                  translate 0.5s ease,
+                  visibility 0s linear 0.35s,
+                  color 0.25s ease;
+              }
+              &::scroll-button(block-start) {
+                transition:
+                  opacity 0.35s ease,
+                  translate 0.5s ease,
+                  visibility 0s linear 0.35s,
+                  color 0.25s ease,
+                  background-color 0.25s ease,
+                  box-shadow 0.25s ease,
+                  border-top-color 0.25s ease,
+                  border-right-color 0.25s ease,
+                  border-bottom-color 0.25s ease,
+                  border-left-color 0.25s ease;
+              }
+
+              /* reveal: show at once, then fade + slide in */
+              @container scroll-state(scrollable: top) {
+                &::after {
+                  transition-delay: 0s;
+                }
+                &::scroll-button(block-start) {
+                  transition-delay: 0s;
+                }
+              }
+            }
+          }
+
+          @keyframes sp-fill {
+            to {
+              --sp-p: 100%;
+              --sp-n: 100;
+            }
+          }
+        }
+      }
+
+      /* ==========================================================================
+         DEMO CHROME  ·  page + color-mode switch (not part of the drop-in module)
+         ========================================================================== */
+      @layer demo {
+        :root {
+          color-scheme: dark light; /* dark-first, then light */
+          background: Canvas;
+          color: CanvasText;
+          accent-color: var(--sp-accent);
+          font-family: "Oxanium", system-ui, sans-serif;
+
+          &:has(input[name="color-scheme"][value="light"]:checked) {
+            color-scheme: light;
+          }
+          &:has(input[name="color-scheme"][value="dark"]:checked) {
+            color-scheme: dark;
+          }
+        }
+        body {
+          margin: 0;
+          max-inline-size: 42rem;
+          padding: 1.4rem;
+        }
+        h1 {
+          font-weight: 800;
+        }
+        h2 {
+          font-weight: 800;
+          margin-block: 2rem 0.6rem;
+        }
+
+        fieldset {
+          margin: 0 0 1.4rem;
+          padding: 0.6rem 1rem 0.9rem;
+          border: 0.08rem solid var(--sp-track);
+          border-radius: 0.6rem;
+          & label {
+            margin-inline-end: 1rem;
+          }
+        }
+        legend {
+          font-weight: 600;
+          padding-inline: 0.4rem;
+        }
+
+        /* demo scrollers — just make them overflow; the module supplies the ring */
+        article,
+        section {
+          overflow: auto;
+          block-size: 24rem;
+          border: 0.08rem solid var(--sp-track);
+          border-radius: 0.9rem;
+          background: color-mix(in oklab, currentColor 5%, transparent);
+          & > p {
+            margin-inline: 1.2rem;
+            line-height: 1.7;
+          }
+        }
+
+        /* color-scheme cross-fade (chrome only; the ring fades its own color) */
+        :where(:root, article, section, fieldset, legend, label) {
+          transition:
+            background-color 0.25s ease,
+            color 0.25s ease,
+            border-color 0.25s ease;
+        }
+      }
