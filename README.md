@@ -50,4 +50,4 @@ input type inferred from its value (ids and dates read-only). One dataset drives
 the table; the form reuses it. No schema — the contract is the source.
 
 ## Rules
-Canonical architecture laws live in [`Autocss-com/ai`](https://github.com/Autocss-com/ai) `AGENTS.md`.
+Canonical architecture laws live in [`D7460N-ai/D7460N.ai`](https://github.com/D7460N-ai/D7460N.ai) `AGENTS.md`.
