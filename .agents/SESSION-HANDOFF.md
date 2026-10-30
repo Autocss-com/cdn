@@ -7,7 +7,7 @@ _Last updated: 2026-09-08 — session: pool-materialization fix + App Shell Stag
 the `<template>` component pool + `assets/pool.html`. Consuming sites (bible,
 id, …) ship only their own `index.html` (thin shell linking cdn assets by
 absolute URL) + `assets/data/*.json`. Zero third-party deps, no build, semantic
-HTML, GitHub Pages + CORS `*`. Canonical laws: `Autocss-com/ai` → `AGENTS.md`;
+HTML, GitHub Pages + CORS `*`. Canonical laws: `D7460N-ai/D7460N.ai` → `AGENTS.md`;
 the pool/mechanism design: `ai` `data-flow/references/pool.md`.
 
 ## Continued session (2026-09-08) — pool bug fixes, merged to `main` (LIVE)
