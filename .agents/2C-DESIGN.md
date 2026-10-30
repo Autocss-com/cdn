@@ -8,7 +8,7 @@ _Design-first. No code until this is approved. Build test-first against the gate
 > `test/gate.js` (row-select→form check). Row-cells decision: **Mechanism B**
 > (generated from keys, not allow-listed). Row-select decision: **keep checkbox +
 > radio, `handleRowToggle` ported** (delegated from the global `document.oninput`).
-> `ai` schema docs retired to optional. Gate: ALL PASS. See `SESSION-HANDOFF.md`.
+> `D7460N.ai` schema docs retired to optional. Gate: ALL PASS. See `SESSION-HANDOFF.md`.
 
 ## Goal
 Bring DHCP's **data-table** (head + body) and **edit form** into the cdn, driven
@@ -85,7 +85,7 @@ cell values into the form inputs. No structural reference either way.
   growth from the pool's row `<li>` prototype.
 
 ## What we drop
-The separate **schema** concept: `ai` `data-flow/references/schema.md` and the
+The separate **schema** concept: `D7460N.ai` `data-flow/references/schema.md` and the
 "schema-driven visibility/ordering" note. The contract is the schema. Docs
 updated in the same change.
 
@@ -97,7 +97,7 @@ updated in the same change.
 ## Test-first + docs
 - New fixture page: a `rows` table (head-derived labels + body rows) + a form
   populated from a selected record. Extend `cdn/test/`, re-baseline the gate.
-- Update `ai` `json/shape.md` (+ retire `schema.md`) and `data-flow` alongside.
+- Update `D7460N.ai` `json/shape.md` (+ retire `schema.md`) and `data-flow` alongside.
 
 ## Guardrails
 Dev branch only; golden-baseline gate before/after; `main` untouched until the
