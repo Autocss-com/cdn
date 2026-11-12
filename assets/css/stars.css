@@ -1,0 +1,94 @@
+/* MARK: STARS
+   Animated star field. Progressive enhancement: renders only where random()
+   is supported; elsewhere the whole file is skipped (zero cost).
+   4 layers. Each layer = one host's ::before (stars) + ::after (loop copy).
+   Star size = the pseudo-element's box size (box-shadow copies the box shape).
+*/
+@layer stars {
+  @supports (width: random(0px, 1px)) {
+    /* MARK: STAR ATTRIBUTES — adjust here */
+    :is(html, body, app-container, main)::before,
+    :is(html, body, app-container, main)::after {
+      --stars-color: CanvasText; /* follows light/dark */
+      --stars-field: 2560px; /* minimum field size; grows with the viewport */
+    }
+
+    /* Layer 1: 600 stars */
+    html::before,
+    html::after {
+      --stars-key: --stars-1;
+      --stars-size: 1px;
+      --stars-duration: 60s;
+      box-shadow: var(--stars-100), var(--stars-100), var(--stars-100), var(--stars-100), var(--stars-100), var(--stars-100);
+    }
+
+    /* Layer 2: 200 stars */
+    body::before,
+    body::after {
+      --stars-key: --stars-2;
+      --stars-size: 2px;
+      --stars-duration: 120s;
+      box-shadow: var(--stars-100), var(--stars-100);
+    }
+
+    /* Layer 3: 100 stars */
+    app-container::before,
+    app-container::after {
+      --stars-key: --stars-3;
+      --stars-size: 3px;
+      --stars-duration: 180s;
+      box-shadow: var(--stars-100);
+    }
+
+    /* Layer 4: 400 stars */
+    main::before,
+    main::after {
+      --stars-key: --stars-4;
+      --stars-size: 1px;
+      --stars-duration: 600s;
+      box-shadow: var(--stars-100), var(--stars-100), var(--stars-100), var(--stars-100);
+    }
+
+    /* MARK: STAR ENGINE
+       One star (--star) repeated. ::before and ::after of a host share
+       positions via the layer's random key, so the ::after copy, one field
+       below, makes the loop seamless.
+    */
+    :is(html, body, app-container, main)::before,
+    :is(html, body, app-container, main)::after {
+      --stars-inline: max(var(--stars-field), 100dvw);
+      --stars-block: max(var(--stars-field), 100dvh);
+      --star:
+        random(var(--stars-key) property-index-scoped, 0px, var(--stars-inline), 1px)
+        random(var(--stars-key) property-index-scoped, 0px, calc(var(--stars-block) - var(--stars-size)), 1px);
+      --stars-10: var(--star), var(--star), var(--star), var(--star), var(--star), var(--star), var(--star), var(--star), var(--star), var(--star);
+      --stars-100: var(--stars-10), var(--stars-10), var(--stars-10), var(--stars-10), var(--stars-10), var(--stars-10), var(--stars-10), var(--stars-10), var(--stars-10), var(--stars-10);
+
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      inline-size: var(--stars-size);
+      block-size: var(--stars-size);
+      color: var(--stars-color);
+    }
+
+    :is(html, body, app-container, main)::after {
+      top: var(--stars-block);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      :is(html, body, app-container, main)::before,
+      :is(html, body, app-container, main)::after {
+        animation: stars-drift var(--stars-duration) linear infinite;
+      }
+    }
+
+    @keyframes stars-drift {
+      to {
+        translate: 0 calc(-1 * var(--stars-block));
+      }
+    }
+  }
+}

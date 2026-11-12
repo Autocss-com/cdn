@@ -113,8 +113,7 @@
      still-unlayered themes.css palette wins = visual parity; standalone, with no
      theme, these paint the system-color defaults.)
   */
-  :root,
-  body {
+  :root {
     background-color: var(--bg);
     color: var(--fg);
   }
