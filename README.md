@@ -1,4 +1,4 @@
-# cdn — the shared AutoCSS front-end
+# cdn — shared AutoCSS front-end
 
 The single front-end that every AutoCSS content site renders through: HTML shell
 + CSS + JavaScript + self-hosted fonts + a component pool, served as static files.
