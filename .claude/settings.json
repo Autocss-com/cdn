@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": \"AutoCSS REQUIREMENT (every change, no exceptions unless the user states otherwise): run original-vs-proposed VISUAL and BENCHMARK PERFORMANCE regression tests before proposing or delivering. Include screenshots comparing original and proposed. Code that runs without errors is only half the testing.\"}}'"
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/autocss-law.sh\" SessionStart"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"SubagentStart\", \"additionalContext\": \"AutoCSS REQUIREMENT (every change, no exceptions unless the user states otherwise): run original-vs-proposed VISUAL and BENCHMARK PERFORMANCE regression tests before proposing or delivering. Include screenshots comparing original and proposed. Code that runs without errors is only half the testing.\"}}'"
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/autocss-law.sh\" SubagentStart"
           }
         ]
       }
@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"UserPromptSubmit\", \"additionalContext\": \"AutoCSS REQUIREMENT (every change, no exceptions unless the user states otherwise): run original-vs-proposed VISUAL and BENCHMARK PERFORMANCE regression tests before proposing or delivering. Include screenshots comparing original and proposed. Code that runs without errors is only half the testing.\"}}'"
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/autocss-law.sh\" UserPromptSubmit"
           }
         ]
       }
