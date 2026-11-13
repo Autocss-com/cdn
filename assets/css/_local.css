@@ -1,0 +1,14 @@
+/* MARK: LOCAL
+   Project-specific overrides. Blank by default.
+
+   Use:
+   1. Copy this file into your project (assets/css/_local.css).
+   2. Link it LAST in index.html, after every AutoCSS file. Load order is the
+      cascade: the last link wins.
+   3. Put your rules inside @layer local { … } below. Linked last, `local` is
+      the highest-priority AutoCSS layer; your own unlayered CSS still beats it.
+
+   Override the custom properties exposed at the top of each AutoCSS file
+   (e.g. --stars-size in stars.css) before rewriting whole rules.
+   Never edit the shared cdn files for one project; override here instead.
+*/
