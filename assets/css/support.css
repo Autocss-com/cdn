@@ -1,0 +1,218 @@
+/* MARK: SUPPORT
+   Browser-support notice. Pure CSS feature detection (@supports). No JS.
+
+   Pattern (from the sources):
+   - The notice is hidden until a CSS condition is true; the link to download a
+     current browser is plain HTML (Jake Dohm,
+     https://dev.to/jakedohm_34/adding-an-update-browser-banner-for-legacy-browsers-39n7).
+   - The message is CSS `content` on a pseudo-element of the notice element
+     (Bram.us, https://www.bram.us/2016/10/10/adding-feature-x-is-unsupported-warnings-in-your-css-demos-with-supports/;
+     Tuts+, https://webdesign.tutsplus.com/quick-tip-add-a-supports-css-file-to-your-codepen-demos--cms-27378t).
+
+   HTML: <app-support popover hidden> inside the top <app-banner>.
+   The `hidden` attribute keeps it hidden by default, including where this layer
+   is ignored.
+
+   Dismissal (no listeners): Esc and tapping off the notice (native popover light
+   dismiss); Close = <label>Close<input type="checkbox" name="close" hidden /></label>,
+   the same label + checkbox + :has() state machine as the rest of AutoCSS.
+   Opened once per session by onload.js, only when this file has set
+   --support-browser (a feature is missing). Browsers without popover
+   (Chrome < 114, Firefox < 125, Safari < 17) get the notice shown by CSS instead.
+
+   Detected features = the non-Widely-Baseline features the active AutoCSS files
+   use. Versions = MDN browser-compat-data for the exact @supports test.
+   Engines (CSS cannot read the browser name):
+   Gecko = -moz-appearance; WebKit = hanging-punctuation; Blink = neither.
+
+   Written for the old browsers it talks to: no CSS nesting, no color-mix(),
+   no light-dark() tokens.
+*/
+@layer support {
+  /* MARK: NOTICE — open popover (onload.js opens it only when a feature is missing) */
+  app-banner > app-support:popover-open {
+    display: block;
+  }
+
+  /* MARK: CLOSE — checkbox state machine */
+  app-banner > app-support:has(> label > input[name="close"]:checked) {
+    display: none;
+  }
+
+  @supports not ((color: light-dark(red, red)) and selector(:popover-open) and (scrollbar-color: auto) and (scrollbar-width: thin) and (text-wrap: balance) and (transition-behavior: allow-discrete) and selector(::details-content)) {
+    /* browsers without popover: shown by CSS */
+    @supports not selector(:popover-open) {
+      app-banner > app-support {
+        display: block;
+      }
+    }
+
+    /* MARK: MESSAGE */
+    app-banner > app-support::before {
+      display: block;
+      white-space: pre-line;
+      content: "This site uses CSS features your browser doesn’t support yet.\A Your browser: " var(--support-browser, "") ".\A Not supported:" var(--support-details-content, "") var(--support-light-dark, "") var(--support-scrollbar-color, "") var(--support-scrollbar-width, "") var(--support-transition-behavior, "") var(--support-text-wrap-balance, "") var(--support-popover, "") "\A Update your browser to see this site as designed.";
+    }
+
+    /* download/update link: only the user's engine (revealed below) */
+    app-banner > app-support > a {
+      display: none;
+    }
+  }
+
+  /* MARK: GECKO — Firefox. Ordered newest first: the last match sets the ceiling.
+     scrollbar-color / scrollbar-width: Firefox 64, below the @layer floor (97). */
+  @supports (-moz-appearance: none) {
+    app-banner > app-support > a[href^="https://www.mozilla.org"] {
+      display: inline;
+    }
+
+    @supports not selector(::details-content) {
+      app-banner > app-support {
+        --support-details-content: "\A • ::details-content — Firefox 143 and later";
+        --support-browser: "Firefox, earlier than version 143";
+      }
+    }
+
+    @supports not (transition-behavior: allow-discrete) {
+      app-banner > app-support {
+        --support-transition-behavior: "\A • transition-behavior — Firefox 129 and later";
+        --support-browser: "Firefox, earlier than version 129";
+      }
+    }
+
+    @supports not selector(:popover-open) {
+      app-banner > app-support {
+        --support-popover: "\A • popover (:popover-open) — Firefox 125 and later";
+        --support-browser: "Firefox, earlier than version 125";
+      }
+    }
+
+    @supports not (text-wrap: balance) {
+      app-banner > app-support {
+        --support-text-wrap-balance: "\A • text-wrap: balance — Firefox 121 and later";
+        --support-browser: "Firefox, earlier than version 121";
+      }
+    }
+
+    @supports not (color: light-dark(red, red)) {
+      app-banner > app-support {
+        --support-light-dark: "\A • light-dark() — Firefox 120 and later";
+        --support-browser: "Firefox, earlier than version 120";
+      }
+    }
+  }
+
+  /* MARK: WEBKIT — Safari, and every iOS browser. Ordered newest first. */
+  @supports (hanging-punctuation: first) {
+    app-banner > app-support > a[href^="https://support.apple.com"] {
+      display: inline;
+    }
+
+    @supports not (scrollbar-color: auto) {
+      app-banner > app-support {
+        --support-scrollbar-color: "\A • scrollbar-color — Safari 26.2 and later";
+        --support-browser: "Safari or another WebKit browser, earlier than version 26.2";
+      }
+    }
+
+    @supports not selector(::details-content) {
+      app-banner > app-support {
+        --support-details-content: "\A • ::details-content — Safari 18.4 and later";
+        --support-browser: "Safari or another WebKit browser, earlier than version 18.4";
+      }
+    }
+
+    @supports not (scrollbar-width: thin) {
+      app-banner > app-support {
+        --support-scrollbar-width: "\A • scrollbar-width — Safari 18.2 and later";
+        --support-browser: "Safari or another WebKit browser, earlier than version 18.2";
+      }
+    }
+
+    @supports not (color: light-dark(red, red)) {
+      app-banner > app-support {
+        --support-light-dark: "\A • light-dark() — Safari 17.5 and later";
+        --support-browser: "Safari or another WebKit browser, earlier than version 17.5";
+      }
+    }
+
+    @supports not (text-wrap: balance) {
+      app-banner > app-support {
+        --support-text-wrap-balance: "\A • text-wrap: balance — Safari 17.5 and later";
+        --support-browser: "Safari or another WebKit browser, earlier than version 17.5";
+      }
+    }
+
+    @supports not (transition-behavior: allow-discrete) {
+      app-banner > app-support {
+        --support-transition-behavior: "\A • transition-behavior — Safari 17.4 and later";
+        --support-browser: "Safari or another WebKit browser, earlier than version 17.4";
+      }
+    }
+
+    @supports not selector(:popover-open) {
+      app-banner > app-support {
+        --support-popover: "\A • popover (:popover-open) — Safari 17 and later";
+        --support-browser: "Safari or another WebKit browser, earlier than version 17";
+      }
+    }
+  }
+
+  /* MARK: BLINK — Chrome, Edge, and other Chromium browsers. Ordered newest first. */
+  @supports (not (-moz-appearance: none)) and (not (hanging-punctuation: first)) {
+    app-banner > app-support > a[href^="https://www.google.com"],
+    app-banner > app-support > a[href^="https://www.microsoft.com"] {
+      display: inline;
+    }
+
+    @supports not selector(::details-content) {
+      app-banner > app-support {
+        --support-details-content: "\A • ::details-content — Chrome and Edge 131 and later";
+        --support-browser: "Chrome, Edge, or another Chromium browser, earlier than version 131";
+      }
+    }
+
+    @supports not (color: light-dark(red, red)) {
+      app-banner > app-support {
+        --support-light-dark: "\A • light-dark() — Chrome and Edge 123 and later";
+        --support-browser: "Chrome, Edge, or another Chromium browser, earlier than version 123";
+      }
+    }
+
+    @supports not (scrollbar-color: auto) {
+      app-banner > app-support {
+        --support-scrollbar-color: "\A • scrollbar-color — Chrome and Edge 121 and later";
+        --support-browser: "Chrome, Edge, or another Chromium browser, earlier than version 121";
+      }
+    }
+
+    @supports not (scrollbar-width: thin) {
+      app-banner > app-support {
+        --support-scrollbar-width: "\A • scrollbar-width — Chrome and Edge 121 and later";
+        --support-browser: "Chrome, Edge, or another Chromium browser, earlier than version 121";
+      }
+    }
+
+    @supports not (transition-behavior: allow-discrete) {
+      app-banner > app-support {
+        --support-transition-behavior: "\A • transition-behavior — Chrome and Edge 117 and later";
+        --support-browser: "Chrome, Edge, or another Chromium browser, earlier than version 117";
+      }
+    }
+
+    @supports not (text-wrap: balance) {
+      app-banner > app-support {
+        --support-text-wrap-balance: "\A • text-wrap: balance — Chrome and Edge 114 and later";
+        --support-browser: "Chrome, Edge, or another Chromium browser, earlier than version 114";
+      }
+    }
+
+    @supports not selector(:popover-open) {
+      app-banner > app-support {
+        --support-popover: "\A • popover (:popover-open) — Chrome and Edge 114 and later";
+        --support-browser: "Chrome, Edge, or another Chromium browser, earlier than version 114";
+      }
+    }
+  }
+}

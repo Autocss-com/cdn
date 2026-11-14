@@ -1,6 +1,7 @@
 import { fetchJson } from "./fetch-json.js";
 import { inject } from "./inject.js";
 import { readStorage } from "./read-storage.js";
+import { writeStorage } from "./write-storage.js";
 
 // Populate the <template> pool from the cdn when the page ships it empty
 // (the pool is "called, not copied" — one source, served from the cdn). A page
@@ -29,4 +30,13 @@ export async function onload() {
 
   control ? (control.checked = true) : null;
   control?.dispatchEvent(new Event("input", { bubbles: true }));
+
+  // Browser-support notice: support.css decides (it sets --support-browser only
+  // when a feature is missing); JS only opens the popover, once per session.
+  const notice = document.querySelector("app-support");
+  const missing = notice ? getComputedStyle(notice).getPropertyValue("--support-browser").trim() : "";
+  if (missing && !readStorage("app-support", "sessionStorage")) {
+    notice.showPopover?.();
+    writeStorage("app-support", "shown", "sessionStorage");
+  }
 }

@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="assets/css/color-theme-66ccff.css" />
     <link rel="stylesheet" href="assets/css/notifications.css" />
     <link rel="stylesheet" href="assets/css/disclosure.css" />
+    <link rel="stylesheet" href="assets/css/support.css" />
     <!-- <link rel="stylesheet" href="assets/css/stars.css" /> -->
     <!-- <link rel="stylesheet" href="assets/css/diag.css"> -->
     <!-- Overrides: add project files AFTER the AutoCSS files above. Last link wins. -->
@@ -36,7 +37,16 @@
   </head>
   <body>
     <app-container>
-      <app-banner>BANNER</app-banner>
+      <app-banner>
+        BANNER
+        <app-support popover hidden>
+          <a href="https://www.google.com/chrome/">Get the latest Chrome</a>
+          <a href="https://www.microsoft.com/edge/download">Get the latest Edge</a>
+          <a href="https://www.mozilla.org/firefox/new/">Get the latest Firefox</a>
+          <a href="https://support.apple.com/en-us/102665">Update Safari</a>
+          <label>Close<input type="checkbox" name="close" hidden /></label>
+        </app-support>
+      </app-banner>
       <header>
         <app-logo>LOGO</app-logo>
         <app-user>USER</app-user>
