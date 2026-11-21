@@ -40,25 +40,25 @@ Consumers: [`Autocss-com/bible`](https://github.com/Autocss-com/bible), [`Autocs
 
 ## New domain site
 Domain sites ([`css-fish/css.fish`](https://github.com/css-fish/css.fish),
-[`CSS-here/css.here`](https://github.com/CSS-here/css.here), …) are static
-"coming soon" pages. Their CSS, icons and fallbacks load from this cdn
+[`CSS-here/css.here`](https://github.com/CSS-here/css.here), …) are
+independent projects with their own data. They are not templates or copies of
+each other; they share only this cdn's scaffold HTML and CSS
 (`support.css`, `stars.css`, `coming-soon.css`, `brand/favicon.ico`,
-`brand/logo.svg`): change a file here once and every domain updates.
+`brand/logo.svg`), loaded by absolute URL: change a file here once and every
+domain updates.
 
-1. On [`css-fish/css.fish`](https://github.com/css-fish/css.fish) (a
-   [template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository)),
-   choose **Use this template** and pick the owner and name for the new domain.
-2. Edit only these lines:
-   - `CNAME`: the domain
-   - `index.html`: `<title>`, `og:title`, `og:site_name`, `canonical`, `<h1>`
-   - `README.md`: the title
-   - `LICENSE`: the copyright line
-3. **Settings → Pages**: Deploy from a branch, `main`, `/ (root)`; Custom domain = the domain.
-4. Point the domain's DNS at GitHub Pages:
-   [Managing a custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
+A domain repo holds only what is its own:
+- `CNAME`: the domain
+- `index.html`: links to the cdn files above, then `assets/css/_local.css`
+  last; its own `<title>`, `og:title`, `og:site_name`, `canonical`, `<h1>`
+- `assets/css/_local.css`: overrides only (this cdn's `_local.css` template)
+- `README.md`, `LICENSE`
 
-A repository made from a template does not receive later template changes, so
-anything shared belongs here in the cdn, never copied into a domain repo.
+Publish: **Settings → Pages**: Deploy from a branch, `main`, `/ (root)`;
+Custom domain = the domain. Point the domain's DNS at GitHub Pages:
+[Managing a custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
+
+Anything shared belongs here in the cdn, never copied into a domain repo.
 
 ## Data contract
 JSON key = element tag name; JSON shape = destination. string → text; array →
