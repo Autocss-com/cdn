@@ -1,0 +1,66 @@
+/* MARK: COMING SOON
+   Shared "coming soon" landing look for every AutoCSS domain site
+   (css.fish, css.here, …). Moved unchanged from css.fish _local.css.
+   AutoCSS law fixes (prefixes, oklch, hard-set height, nth-of-type) are a
+   separate, pending step.
+*/
+@layer coming-soon {
+  html {
+    /* height: 100%; */
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    overflow: hidden;
+  }
+
+  app-container {
+    grid-template-rows: repeat(auto-fit, minmax(1rem, 1fr));
+  }
+
+  main {
+     display: grid;
+     height: 100dvh;
+  }
+
+  article {
+     display: grid;
+     align-content: center;
+     justify-items: center;
+     text-align: center;
+     color: rgba(255, 255, 255, 0.4);
+  }
+
+  h1 {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: clamp(2.5rem, 1.5rem + 5cqi, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    text-wrap: balance;
+
+    background: -webkit-linear-gradient(white, #38495a);
+    background-clip: text;
+    text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    font-size: clamp(1rem, 0.9rem + 0.5cqi, 1.25rem);
+    line-height: 1.6;
+    max-inline-size: 60ch;
+    text-wrap: pretty;
+
+    font-style: italic;
+    background: -webkit-linear-gradient(white, #38495a);
+    background-clip: text;
+    text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p:nth-of-type(2) {
+    opacity: .5;
+  }
+
+  h1, p {
+    overflow-wrap: anywhere;
+  }
+}
