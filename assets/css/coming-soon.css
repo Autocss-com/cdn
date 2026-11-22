@@ -1,13 +1,11 @@
 /* MARK: COMING SOON
    Shared "coming soon" landing look for every AutoCSS domain site
-   (css.fish, css.here, …). Moved unchanged from css.fish _local.css.
-   AutoCSS law fixes (prefixes, oklch, hard-set height, nth-of-type) are a
-   separate, pending step.
+   (css.fish, css.here, …).
 */
 @layer coming-soon {
   html {
     /* height: 100%; */
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    background: radial-gradient(ellipse at bottom, oklch(26.84% 0.0312 252.76) 0%, oklch(14.61% 0.011 275.82) 100%);
     overflow: hidden;
   }
 
@@ -17,7 +15,6 @@
 
   main {
      display: grid;
-     height: 100dvh;
   }
 
   article {
@@ -25,21 +22,18 @@
      align-content: center;
      justify-items: center;
      text-align: center;
-     color: rgba(255, 255, 255, 0.4);
+     color: oklch(100% 0 0 / 0.4);
   }
 
   h1 {
-    color: rgba(255, 255, 255, 0.7);
     font-size: clamp(2.5rem, 1.5rem + 5cqi, 5rem);
     font-weight: 300;
     line-height: 1.1;
     text-wrap: balance;
 
-    background: -webkit-linear-gradient(white, #38495a);
+    color: transparent;
+    background: linear-gradient(oklch(100% 0 0), oklch(39.8% 0.0361 248.75));
     background-clip: text;
-    text-fill-color: transparent;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
 
   p {
@@ -47,16 +41,18 @@
     line-height: 1.6;
     max-inline-size: 60ch;
     text-wrap: pretty;
+    /* Room for the italic overhang: background-clip: text only paints inside
+       the box, so without it the last glyph is cut off. */
+    padding-inline: 0.25ch;
 
     font-style: italic;
-    background: -webkit-linear-gradient(white, #38495a);
+    color: transparent;
+    background: linear-gradient(oklch(100% 0 0), oklch(39.8% 0.0361 248.75));
     background-clip: text;
-    text-fill-color: transparent;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
 
-  p:nth-of-type(2) {
+  /* Every paragraph after the first is secondary. */
+  p ~ p {
     opacity: .5;
   }
 
