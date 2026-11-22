@@ -1,5 +1,5 @@
 # Accessibility
-<!-- Include a brief statement describing why accessibility matters to your project, who should be able to use and contribute to it, and what this document covers, such as your accessibility commitments, contributor expectations, and issue-reporting process. Write for people who may read this after encountering a barrier. Use  lain
+<!-- Include a brief statement describing why accessibility matters to your project, who should be able to use and contribute to it, and what this document covers, such as your accessibility commitments, contributor expectations, and issue-reporting process. Write for people who may read this after encountering a barrier. Use plain
 language and describe user experiences rather than relying on legal language, technical jargon, or standards codes. -->
 
 Accessibility is a core priority for **open-source projects**. We want everyone — including people with disabilities and people using assistive technology — to be able to read, navigate, and contribute to this site.
@@ -45,16 +45,13 @@ If you are contributing content or code, please follow these guardrails so we do
   - For videos, provide captions and a transcript.
   - Don't use color as the only way to convey meaning.
   - Content reflows without loss of information or functionality (test at 200% and with narrow widths).
-- **CI/CD**
-  - PRs may be blocked if they introduce accessibility violations detected by our linting or scanning workflows.
-  - Resolve flagged issues, or document why a violation cannot be addressed in the PR description.
 
 ## Reporting accessibility issues
 <!-- Provide a direct, accessible way to report a barrier or request help. Invite useful context such as the affected task, URL, observed behavior, browser, operating system, and assistive technology. Make screenshots or recordings optional and do not require disability disclosure. -->
 
 If you run into an accessibility barrier, please let us know — we treat accessibility reports as expertise, not complaints.
 
-1. **Open an issue** using the [accessibility issue template](https://github.com/open-source-accessibility/accessibility-toolkit/issues/new?template=accessibility.yml).
+1. **Open an issue** in the [Autocss-com/cdn issue tracker](https://github.com/Autocss-com/cdn/issues/new).
 2. Include, when possible:
    - What you were trying to do and what went wrong.
    - The page URL.
@@ -74,7 +71,7 @@ If you run into an accessibility barrier, please let us know — we treat access
 ### How we respond
 <!-- Explain what reporters can expect after submitting an accessibility issue, including acknowledgement, status updates, workarounds, expected timelines, and opportunities to verify a fix. Use commitments your project can consistently uphold. -->
 
-- We will acknowledge the reporter's experience promptly, respectfully, and constructively  treating accessibility reports as valuable project expertise rather than complaints.
+- We will acknowledge the reporter's experience promptly, respectfully, and constructively, treating accessibility reports as valuable project expertise rather than complaints.
 - We will not require reporters to disclose a diagnosis or other personal information.
 - We will explain next steps, known limitations, and relevant dependencies.
 - Where possible, we will provide a workaround while a fix is in progress.
@@ -97,7 +94,7 @@ These targets begin when the issue is opened. If we cannot meet a target, we wil
 ## Ownership and maintenance
 <!-- Identify the team, role, or maintainer responsible for accessibility and describe their responsibilities to the project. Include the review cadence and how ownership transfers when responsibilities change. -->
 
-Accessibility is owned by **[maintainer name or role]**.
+Accessibility is owned by **dragontheory**.
 
 ### Responsibilities
 
@@ -133,4 +130,4 @@ Partial-support notes:
 ## Feedback
 <!-- Explain how users and contributors can suggest improvements to this statement or the project's accessibility practices. Direct active accessibility barriers to the reporting process above. -->
 
-Accessibility is an ongoing practice, not a one-time fix. If you have suggestions for improving this statement or our practices, please open an issue or a pull request. Thank you for helping make Accessibility Toolkit usable by everyone.
+Accessibility is an ongoing practice, not a one-time fix. If you have suggestions for improving this statement or our practices, please open an issue or a pull request. Thank you for helping make this project usable by everyone.
