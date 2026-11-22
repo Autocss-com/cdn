@@ -32,9 +32,7 @@
     line-height: 1.1;
     text-wrap: balance;
 
-    color: transparent;
-    background: linear-gradient(oklch(100% 0 0), oklch(39.8% 0.0361 248.75));
-    background-clip: text;
+    color: oklch(100% 0 0 / 0.7);
   }
 
   p {
@@ -47,9 +45,16 @@
     padding-inline: 0.25ch;
 
     font-style: italic;
-    color: transparent;
-    background: linear-gradient(oklch(100% 0 0), oklch(39.8% 0.0361 248.75));
-    background-clip: text;
+  }
+
+  /* Gradient text only where background-clip: text is supported. Elsewhere the
+     solid color stays, so the text is never transparent and unreadable. */
+  @supports (background-clip: text) {
+    h1, p {
+      color: transparent;
+      background: linear-gradient(oklch(100% 0 0), oklch(39.8% 0.0361 248.75));
+      background-clip: text;
+    }
   }
 
   /* Every paragraph after the first is secondary. */
