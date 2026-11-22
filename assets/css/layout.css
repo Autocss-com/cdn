@@ -263,9 +263,9 @@
       minmax(min(var(--min-row-size), 100%), 1fr)
     );
   }
-}
 
-/* Hide by default */
-template {
-  display: none;
+  /* Hide by default */
+  template {
+    display: none;
+  }
 }
