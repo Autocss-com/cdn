@@ -23,7 +23,7 @@ const FIXTURES = [
     const dir = path.join(__dirname, out);
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
-    for (const [route, html] of Object.entries(snapshots)) fs.writeFileSync(path.join(dir, route + ".html"), html + "\n");
+    for (const [route, html] of Object.entries(snapshots)) fs.writeFileSync(path.join(dir, route + ".html"), "<!doctype html>\n" + html + "\n");
     console.log(`captured ${site} baseline for routes:`, routes.join(", "));
   }
 })().catch((e) => { console.error(e.stack || e.message); process.exit(1); });

@@ -26,7 +26,7 @@ async function diffFixture(site, baselineDir) {
   const results = routes.map((route) => {
     const golden = path.join(BASE, route + ".html");
     if (!fs.existsSync(golden)) return { route: `${site}/${route}`, ok: false, why: "no baseline (run: npm run baseline)" };
-    const ok = fs.readFileSync(golden, "utf8").trim() === (snapshots[route] || "").trim();
+    const ok = fs.readFileSync(golden, "utf8").trim() === ("<!doctype html>\n" + (snapshots[route] || "")).trim();
     return { route: `${site}/${route}`, ok, why: ok ? "identical" : "DOM differs from golden baseline" };
   });
   return { errors, failed, results };

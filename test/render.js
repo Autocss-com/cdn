@@ -17,7 +17,7 @@ if (!siteRoot || !cdnRoot) { console.error("usage: node render.js <siteRoot> <cd
   const { routes, errors, failed, snapshots } = await renderSite({ siteRoot, cdnRoot });
   if (outDir) {
     fs.mkdirSync(outDir, { recursive: true });
-    for (const [r, h] of Object.entries(snapshots)) fs.writeFileSync(path.join(outDir, r.replace(/[^\w.-]+/g, "_") + ".html"), h + "\n");
+    for (const [r, h] of Object.entries(snapshots)) fs.writeFileSync(path.join(outDir, r.replace(/[^\w.-]+/g, "_") + ".html"), "<!doctype html>\n" + h + "\n");
   }
   console.log(JSON.stringify({ routes, errorCount: errors.length, failedCount: failed.length,
     errors: errors.slice(0, 8), failed: failed.slice(0, 8) }, null, 2));

@@ -49,10 +49,11 @@ domain updates.
 
 A domain repo holds only what is its own:
 - `CNAME`: the domain
-- `index.html`: links to the cdn files above, then `assets/css/_local.css`
-  last; its own `<title>`, `og:title`, `og:site_name`, `canonical`, `<h1>`
-- `assets/css/_local.css`: overrides only (this cdn's `_local.css` template)
-- `README.md`, `LICENSE`
+- `index.html`: `<!doctype html>` on line 1; links to the cdn files above; the
+  full shell scaffold (`app-banner`, `header`, `nav`, `main`, `aside`,
+  `footer`, `app-banner`), left empty so `layout.css` hides it; its own
+  `<title>`, `og:title`, `og:site_name`, `canonical`, `<h1>`
+- `README.md`, `LICENSE` (MIT)
 
 Publish: **Settings → Pages**: Deploy from a branch, `main`, `/ (root)`;
 Custom domain = the domain. Point the domain's DNS at GitHub Pages:
