@@ -1,0 +1,91 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; git -C ~/D7460N.ai pull -q --ff-only >/dev/null 2>&1 || git clone -q --depth 1 https://github.com/D7460N-ai/D7460N.ai ~/D7460N.ai >/dev/null 2>&1; bash ~/D7460N.ai/.claude/hooks/autocss-law.sh SessionStart whitelist"
+          },
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; for i in 1 2 3 4 5 6 7 8 9 10; do [ -f ~/D7460N.ai/.claude/hooks/enforce.js ] && break; sleep 1; done; node ~/D7460N.ai/.claude/hooks/enforce.js SessionStart"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; bash ~/D7460N.ai/.claude/hooks/autocss-law.sh SubagentStart whitelist"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; bash ~/D7460N.ai/.claude/hooks/autocss-law.sh UserPromptSubmit whitelist"
+          },
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; node ~/D7460N.ai/.claude/hooks/enforce.js UserPromptSubmit"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; node ~/D7460N.ai/.claude/hooks/enforce.js PreToolUse"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; node ~/D7460N.ai/.claude/hooks/validate-edit.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; node ~/D7460N.ai/.claude/hooks/enforce.js Stop"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; node ~/D7460N.ai/.claude/hooks/enforce.js Stop"
+          }
+        ]
+      }
+    ]
+  }
+}
